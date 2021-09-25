@@ -15,12 +15,12 @@ C:/Users/Play Account/ProjectIcarus
 -logFile
 Logs/AssetImportWorker2.log
 -srvPort
-50412
+54211
 Successfully changed project path to: C:/Users/Play Account/ProjectIcarus
 C:/Users/Play Account/ProjectIcarus
 Using Asset Import Pipeline V2.
-Refreshing native plugins compatible for Editor in 251.73 ms, found 3 plugins.
-Preloading 0 native plugins for Editor in 0.01 ms.
+Refreshing native plugins compatible for Editor in 296.85 ms, found 3 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
 Initialize engine version: 2020.3.15f2 (6cf78cb77498)
 [Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2020.3.15f2/Editor/Data/Resources/UnitySubsystems
 [Subsystems] Discovering subsystems at path C:/Users/Play Account/ProjectIcarus/Assets
@@ -31,9 +31,10 @@ Direct3D:
     Vendor:   
     VRAM:     2010 MB
     Driver:   26.21.14.3086
+Shader 'Universal Render Pipeline/Particles/Lit': fallback shader 'Universal Render Pipeline/Particles/SimpleLit' not found
 Initialize mono
 Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2020.3.15f2/Editor/Data/Managed'
 Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2020.3.15f2/Editor/Data/MonoBleedingEdge/lib/mono/unityjit'
 Mono config path = 'C:/Program Files/Unity/Hub/Editor/2020.3.15f2/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56784
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56724
 Begin MonoManager ReloadAssembly

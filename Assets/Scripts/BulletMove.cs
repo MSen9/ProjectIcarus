@@ -8,7 +8,7 @@ public enum BulletType{
 }
 public class BulletMove : MonoBehaviour
 {
-    BulletType bulletType = BulletType.damage;
+    //BulletType bulletType = BulletType.damage;
     float moveSpeed = 1/60f;
     //the rotation on the z axis with which the bullet is moving
     
