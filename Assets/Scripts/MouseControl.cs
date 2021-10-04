@@ -10,9 +10,11 @@ public class MouseControl : MonoBehaviour
     float OFFSET_MODIFIER = 0.2f;
     float xCamOffset = 0;
     float yCamOffset = 0;
+    Rigidbody2D rb;
     // Start is called before the first frame update
     void Start()
     {
+        rb = mainChara.GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -25,8 +27,9 @@ public class MouseControl : MonoBehaviour
         {
             Vector3 charPos = mainChara.transform.position;
             float angle = Mathf.Atan2(mousePos.y - charPos.y, mousePos.x - charPos.x) * Mathf.Rad2Deg + ANGLE_OFFSET;
-            mainChara.transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
+            //mainChara.transform.rotation = Quaternion.Euler(0f, 0f, angle);
+            rb.MoveRotation(angle);
 
             //change camera position based on mouse
             Camera.main.transform.position = new Vector3(charPos.x, charPos.y, Camera.main.transform.position.z);

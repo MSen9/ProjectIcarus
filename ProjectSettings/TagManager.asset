@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Point
+  - Wall
   layers:
   - Default
   - TransparentFX
@@ -44,4 +45,10 @@ TagManager:
     locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Vertex
+    uniqueID: 2948379223
+    locked: 0
+  - name: Point
+    uniqueID: 2804359569
     locked: 0

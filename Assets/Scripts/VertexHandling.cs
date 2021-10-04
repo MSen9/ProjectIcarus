@@ -8,7 +8,7 @@ public class VertexHandling : MonoBehaviour
     GameObject startPoint;
     public GameObject endPoint;
     public bool autoGetEndPoint = false;
-    PointManager pm;
+    AllPointManager pm;
     Vector3 lastStartPointPos;
     Vector3 lastEndPointPos;
     float ANGLE_OFFSET = 90f;
@@ -17,26 +17,40 @@ public class VertexHandling : MonoBehaviour
     Vector3 extendRate;
     bool growing = true;
     //used for things like bullets which to not spawn in at the start
-    public bool startFullyGrown = false;
+    //public bool startFullyGrown = false;
     float totalPointDist;
     int VERT_PIXELS = 64;
-    int PIXELS_PER_UNIT = 100;
+    int PIXELS_PER_UNIT = 200;
     //the amount of units crossed for each 'scale' it has. For instance at 2 scale 
-    float UNITS_PER_SCALE = 0;
+    float unitsPerScale = 0;
+
+    float MIN_MOVE_CHECK = 0.001f;
+    public bool fixVertexPositions = true;
     void Start()
     {
-
+        pm = transform.parent.parent.GetComponent<AllPointManager>();
+        if (pm.startFullyGrown)
+        {
+            InstantGrowVertexes();
+            return;
+        }
         GetVertexBaseInfo();
-        SetVertexAngle();
-        //set scale to 0 so it grows out
+        SetBaseVertexAngle();
+        //set scale to 0 so it grows out    
         transform.localScale = new Vector3(transform.localScale.x, 0,1f);     
         //set the extend rate
-        extendRate = new Vector3(0f, totalPointDist / ExtendFrames);
+        extendRate = new Vector3(0f, (totalPointDist / ExtendFrames)/startPoint.transform.localScale.y);
+
 
     }
 
     public void InstantGrowVertexes()
     {
+        if(pm == null)
+        {
+            pm = transform.parent.parent.GetComponent<AllPointManager>();
+        }
+
         GetVertexBaseInfo();
         if(endPoint == null)
         {
@@ -44,15 +58,15 @@ public class VertexHandling : MonoBehaviour
             transform.localScale = new Vector3(transform.localScale.x,0f, 1f);
             return;
         }
-        SetVertexAngle();
-        transform.localScale = new Vector3(transform.localScale.x, totalPointDist / UNITS_PER_SCALE, 1f);
+        SetBaseVertexAngle();
+        SetBaseVertexLength();
     }
 
     bool GetVertexBaseInfo()
     {
 
         startPoint = transform.parent.gameObject;
-        pm = startPoint.transform.parent.GetComponent<PointManager>();
+
         if(pm == null)
         {
            
@@ -91,11 +105,11 @@ public class VertexHandling : MonoBehaviour
             }      
             //autoGetEndPoint = false;
         }
-        UNITS_PER_SCALE = (VERT_PIXELS / (float)PIXELS_PER_UNIT) * startPoint.transform.localScale.y;
+        unitsPerScale = (VERT_PIXELS / (float)PIXELS_PER_UNIT) * startPoint.transform.localScale.y;
         return true;
     }
 
-    void SetVertexAngle()
+    void SetBaseVertexAngle()
     {
         //assume Point positions can't change while it is growing out
         //Get the distance in units with which the vector has to grow out
@@ -107,6 +121,12 @@ public class VertexHandling : MonoBehaviour
         //startPoint is parent so you only need to set that rotation
         startPoint.transform.rotation = Quaternion.Euler(0f, 0f, startAngle);
     }
+
+    void SetBaseVertexLength()
+    {
+        transform.localScale = new Vector3(transform.localScale.x, totalPointDist / unitsPerScale, 1f);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -115,17 +135,35 @@ public class VertexHandling : MonoBehaviour
         if (growing)
         {
             transform.localScale += extendRate;
-            if (totalPointDist < transform.localScale.y * UNITS_PER_SCALE)
+            if (totalPointDist < transform.localScale.y * unitsPerScale)
             {
-                transform.localScale = new Vector3(transform.localScale.x, totalPointDist / UNITS_PER_SCALE,1f);
+                transform.localScale = new Vector3(transform.localScale.x, totalPointDist / unitsPerScale,1f);
                 growing = false;
                 //also record for positional changes
-                lastStartPointPos = startPoint.transform.position;
-                lastEndPointPos = startPoint.transform.position;
+                RefreshLastPositions();
             }
         } else
         {
+            //do code to check for point moving and update the vetex locations
+            if (fixVertexPositions)
+            {
+                if((lastStartPointPos - startPoint.transform.localPosition).magnitude > MIN_MOVE_CHECK ||
+                    (lastEndPointPos - endPoint.transform.localPosition).magnitude > MIN_MOVE_CHECK)
+                {
+                    SetBaseVertexAngle();
+                    SetBaseVertexLength();
+                }
+                RefreshLastPositions();
+            }
 
+
+            
         }
+    }
+
+    public void RefreshLastPositions()
+    {
+        lastStartPointPos = startPoint.transform.localPosition;
+        lastEndPointPos = endPoint.transform.localPosition;
     }
 }

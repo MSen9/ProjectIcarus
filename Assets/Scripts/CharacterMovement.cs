@@ -5,13 +5,14 @@ using UnityEngine;
 public class CharacterMovement : MonoBehaviour
 {
     Vector2 currSpeed;
-    float maxSpeed = 1f;
-    float accelRate = 1/3f;
-    float speedMult = 1 / 60f;
+    float maxSpeed = 3f;
+    float accelRate = 1/2f;
+    float frameMult = 1 / 50f;
     KeyCode upKey;
     KeyCode downKey;
     KeyCode leftKey;
     KeyCode rightKey;
+    Rigidbody2D rb;
     // Start is called before the first frame update
     void Start()
     {
@@ -19,10 +20,11 @@ public class CharacterMovement : MonoBehaviour
         downKey = KeyCode.S;
         leftKey = KeyCode.A;
         rightKey = KeyCode.D;
+        rb = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         
         if (Input.GetKey(rightKey))
@@ -96,6 +98,8 @@ public class CharacterMovement : MonoBehaviour
         currSpeed.x = Mathf.Clamp(currSpeed.x, maxSpeed * -1, maxSpeed);
         currSpeed.y = Mathf.Clamp(currSpeed.y, maxSpeed * -1, maxSpeed);
 
-        transform.position += new Vector3(currSpeed.x * speedMult,currSpeed.y * speedMult,0);
+        rb.MovePosition(new Vector2(transform.position.x + currSpeed.x * frameMult, 
+            transform.position.y + currSpeed.y * frameMult));
+       
     }
 }

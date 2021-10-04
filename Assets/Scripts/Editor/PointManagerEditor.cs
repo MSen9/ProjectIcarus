@@ -2,19 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-[CustomEditor(typeof(PointManager))]
+[CustomEditor(typeof(AllPointManager))]
 public class PointManagerEditor : Editor
 {
-    /*
+    
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
         //DrawDefaultInspector();
         if (GUILayout.Button("Set all vertexes to full size"))
         {
-            PointManager myScript = ((PointManager)target);
+            AllPointManager myScript = ((AllPointManager)target);
             myScript.InstantGrowAllVertexes();
         }
     }
-    */
+    
 }
