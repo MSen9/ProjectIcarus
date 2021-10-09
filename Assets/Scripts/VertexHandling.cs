@@ -12,9 +12,12 @@ public class VertexHandling : MonoBehaviour
     Vector3 lastStartPointPos;
     Vector3 lastEndPointPos;
     float ANGLE_OFFSET = 90f;
-    //the number of frames needed for the extension to complete
-    public int ExtendFrames = 60;
+    //the amount of time needed to fully extend the vertex
+    public float extendTime = 1;
     Vector3 extendRate;
+    bool shrinking = false;
+    float deathTime = 0;
+    float totalDeathTime;
     bool growing = true;
     //used for things like bullets which to not spawn in at the start
     //public bool startFullyGrown = false;
@@ -34,15 +37,18 @@ public class VertexHandling : MonoBehaviour
             InstantGrowVertexes();
             return;
         }
+        growing = pm.growNormally;
         GetVertexBaseInfo();
         SetBaseVertexAngle();
         //set scale to 0 so it grows out    
-        transform.localScale = new Vector3(transform.localScale.x, 0,1f);     
+        transform.localScale = new Vector3(transform.localScale.x, 0,1f);
         //set the extend rate
-        extendRate = new Vector3(0f, (totalPointDist / ExtendFrames)/startPoint.transform.localScale.y);
+        extendTime = pm.extendTime;
+        extendRate = new Vector3(0f, ((totalPointDist / extendTime) / startPoint.transform.localScale.y) / unitsPerScale);
 
 
     }
+    
 
     public void InstantGrowVertexes()
     {
@@ -59,7 +65,12 @@ public class VertexHandling : MonoBehaviour
             return;
         }
         SetBaseVertexAngle();
-        SetBaseVertexLength();
+        SetToFullVertexLength();
+    }
+
+    public void SetVertexLength(float growthPercent)
+    {
+        transform.localScale = new Vector3(transform.localScale.x, ((totalPointDist / unitsPerScale) / startPoint.transform.parent.localScale.y)*(growthPercent/100), 1f);
     }
 
     bool GetVertexBaseInfo()
@@ -122,19 +133,37 @@ public class VertexHandling : MonoBehaviour
         startPoint.transform.rotation = Quaternion.Euler(0f, 0f, startAngle);
     }
 
-    void SetBaseVertexLength()
+    public void SetToFullVertexLength()
     {
-        transform.localScale = new Vector3(transform.localScale.x, totalPointDist / unitsPerScale, 1f);
+        transform.localScale = new Vector3(transform.localScale.x, (totalPointDist / unitsPerScale)/startPoint.transform.parent.localScale.y, 1f);
     }
 
     // Update is called once per frame
     void Update()
     {
+        //stop the update early
+        if(MapManager.current.vectorLoad == false)
+        {
+            return;
+        }
+
         //when valid change the rotation to face towards end point and grow until you reach it.
         //use the scale and distance between points to measure if it is done growing
-        if (growing)
+        if (shrinking)
         {
-            transform.localScale += extendRate;
+            transform.localScale += extendRate*Time.deltaTime;
+            if(transform.localScale.y < 0)
+            {
+                transform.localScale = new Vector2(transform.localScale.x, 0);
+            }
+            deathTime += Time.deltaTime;
+            Color c = GetComponent<SpriteRenderer>().color;
+            c.a = 1 - deathTime / totalDeathTime;
+            GetComponent<SpriteRenderer>().color = c;
+        }
+        else if (growing)
+        {
+            transform.localScale += extendRate*Time.deltaTime;
             if (totalPointDist < transform.localScale.y * unitsPerScale)
             {
                 transform.localScale = new Vector3(transform.localScale.x, totalPointDist / unitsPerScale,1f);
@@ -151,7 +180,7 @@ public class VertexHandling : MonoBehaviour
                     (lastEndPointPos - endPoint.transform.localPosition).magnitude > MIN_MOVE_CHECK)
                 {
                     SetBaseVertexAngle();
-                    SetBaseVertexLength();
+                    SetToFullVertexLength();
                 }
                 RefreshLastPositions();
             }
@@ -165,5 +194,14 @@ public class VertexHandling : MonoBehaviour
     {
         lastStartPointPos = startPoint.transform.localPosition;
         lastEndPointPos = endPoint.transform.localPosition;
+    }
+
+    public void StartShrinking(float shrinkTime)
+    {
+        shrinking = true;
+        totalDeathTime = shrinkTime;
+        extendRate *= -1*extendTime;
+        extendRate /= totalDeathTime;
+        fixVertexPositions = false;
     }
 }

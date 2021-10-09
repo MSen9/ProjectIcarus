@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Point
   - Wall
+  - Canvas
+  - LightSource
   layers:
   - Default
   - TransparentFX
@@ -51,4 +53,7 @@ TagManager:
     locked: 0
   - name: Point
     uniqueID: 2804359569
+    locked: 0
+  - name: UI
+    uniqueID: 555357299
     locked: 0

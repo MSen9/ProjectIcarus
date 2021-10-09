@@ -7,7 +7,7 @@ public class EnemyMovement : MonoBehaviour
     public float baseMoveSpeed = 2f;
     public float rotateRate = 120f;
     int HALF_CIRCLE_DEGREES = 180;
-    int CIRLCE_DEGREES = 360;
+    static int CIRLCE_DEGREES = 360;
     float updateTimeGap = 1/50f;
     float rotateGoal = 0;
     public float fireRange = 30;
@@ -46,6 +46,14 @@ public class EnemyMovement : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (MapManager.current.doneLoading == false)
+        {
+            return;
+        }
+        if (player == null)
+        {
+            return;
+        }
         UpdatePlayerDist();
         rotateGoal = GetRotationGoal();
         rotateGoal = NormalizeAngle(rotateGoal);
@@ -53,7 +61,7 @@ public class EnemyMovement : MonoBehaviour
 
         //rb.MoveRotation(Quaternion.RotateTowards(Quaternion.Euler(0,0,currAngle), Quaternion.Euler(0,0,rotateGoal), rotateRate).z*Mathf.Rad2Deg);
         currAngle = NormalizeAngle(currAngle);
-        int negativeMod = 1;
+        //int negativeMod = 1;
         float angleDist = currAngle - rotateGoal;
         //the left and right distance to the 0 degrees angle for the current and 
         if(angleDist > HALF_CIRCLE_DEGREES || (angleDist < 0 && angleDist >= -1*HALF_CIRCLE_DEGREES))
@@ -108,7 +116,7 @@ public class EnemyMovement : MonoBehaviour
         
     }
 
-    float NormalizeAngle(float angle)
+    static public float NormalizeAngle(float angle)
     {
         while(angle > CIRLCE_DEGREES)
         {

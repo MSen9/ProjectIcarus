@@ -21,10 +21,15 @@ public class EnemyShooting : MonoBehaviour
 
     void Update()
     {
+        if(MapManager.current.doneLoading == false)
+        {
+            return;
+        }
         if (canShoot)
         {
             if(currReloadTime < 0)
             {
+                
                 currReloadTime += reloadTime;
                 GameObject madeBullet = Instantiate(bullet, transform.position + transform.rotation * new Vector2(0,shootDistOffset), transform.rotation);
             }

@@ -9,14 +9,24 @@ public class HealthHandling : MonoBehaviour
     public int health = 1;
     public float invincibilityTime = 0f;
     float currInvincibilityTime = 0f;
+
     Dictionary<Collider2D,float> bulletIgnoreTimes;
     //the time with which individual bullets are ignored 
     //float indivBulletIgnoreTime = 1f;
 
 
-    public Vector3 damageMove = new Vector3(0.1f, 0.1f, 0);
-    public float damageRotate = 20f;
-    public int baseDamageTime = 10;
+    public Vector2 damageMove = new Vector2(0.2f, 0.2f);
+    public float damageRotate = 40f;
+
+    //the time spent moving out for the 'damage animation' the same amount of time is then spent moving back to the normal state
+    public float baseDamageTime = 0.5f;
+    public int damagePoints = 3;
+
+    public float deathMove = 0.5f;
+    public float deathRotate = 60f;
+    float deathTime = 2f;
+
+    HealthPowerUpTracker healthPupTracker;
     //Collider2D[] colliders;
     AllPointManager pm;
     void Start()
@@ -24,6 +34,14 @@ public class HealthHandling : MonoBehaviour
         //colliders = GetComponents<BoxCollider2D>();
         pm = GetComponent<AllPointManager>();
         bulletIgnoreTimes = new Dictionary<Collider2D,float>();
+        if (isPlayer)
+        {
+            healthPupTracker = GameObject.FindGameObjectWithTag("Canvas").GetComponent<HealthPowerUpTracker>();
+            for (int i = 0; i < health; i++)
+            {
+                healthPupTracker.MakeUIObj(trackedTypes.health);
+            }
+        }
 
     }
 
@@ -56,6 +74,7 @@ public class HealthHandling : MonoBehaviour
                     PlayerShooting pShooting = gameObject.GetComponent<PlayerShooting>();
                     if (pShooting != null)
                     {
+                        healthPupTracker.RemoveUiObj(trackedTypes.health);
                         pShooting.currPowerUpImmunity = pShooting.powerUpImmunityTime;
                     }
 
@@ -67,13 +86,36 @@ public class HealthHandling : MonoBehaviour
                     //have already been hit by the bullet, needs to bounce first
                     return;
                 }
-
-                
-                Debug.Log("Hit");
                 health--;
                 
                 bulletInfo.alreadyHit.Add(gameObject);
-                pm.DamageAnimation(damageMove,damageRotate,baseDamageTime);
+                if(health > 0)
+                {
+                    pm.DamageAnimation(damageMove, damageRotate, baseDamageTime,damagePoints);
+                } else
+                {
+                    //destruction effect
+
+                    BoxCollider2D[] bCols = GetComponents<BoxCollider2D>();
+                    for (int i = 0; i < bCols.Length; i++)
+                    {
+                        bCols[i].enabled = false;
+                    }
+                    if (isPlayer)
+                    {
+                        GetComponent<PlayerShooting>().enabled = false;
+                        GetComponent<PlayerMovement>().enabled = false;
+                    } else
+                    {
+                        GetComponent<EnemyMovement>().enabled = false;
+                        GetComponent<EnemyShooting>().enabled = false;
+                    }
+
+                    pm.DeathAnimation(deathMove, deathRotate, deathTime);
+                    Destroy(gameObject, deathTime);
+                    this.enabled = false;
+                }
+                
             } else if(bulletInfo.bulletType == BulletType.powerUp)
             {
                 if (isPlayer)
@@ -89,13 +131,24 @@ public class HealthHandling : MonoBehaviour
                     //process the powerup
                     switch(bulletInfo.powerType){
                         case PowerUpType.fireRate:
-                            pShooting.FireRateBuffs++;
+                            healthPupTracker.MakeUIObj(trackedTypes.fireRate);
+                            pShooting.fireRateBuffs++;
                             break;
                         case PowerUpType.shotSize:
-                            pShooting.ShotSizeBuffs++;
+                            healthPupTracker.MakeUIObj(trackedTypes.shotSize);
+                            pShooting.shotSizeBuffs++;
+                            break;
+                        case PowerUpType.manaGen:
+                            healthPupTracker.MakeUIObj(trackedTypes.manaGen);
+                            pShooting.manaGenBuffs++;
+                            break;
+                        default:
+                            Debug.LogError("Error: No powerup type on powerUp");
                             break;
 
                     }
+                    
+                    pShooting.UpdateBuffs(bulletInfo.powerType);
 
                     pShooting.currPowerUpImmunity = pShooting.powerUpImmunityTime;
                     //powerUpIsNoLongerNeeded
