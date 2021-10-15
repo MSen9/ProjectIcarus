@@ -8,6 +8,15 @@ TagManager:
   - Wall
   - Canvas
   - LightSource
+  - RunManager
+  - MapManager
+  - EnemyList
+  - BulletList
+  - StoVManager
+  - ShopManager
+  - ShopItem
+  - ShopItemDesc
+  - SVectorHolder
   layers:
   - Default
   - TransparentFX
@@ -53,6 +62,9 @@ TagManager:
     locked: 0
   - name: Point
     uniqueID: 2804359569
+    locked: 0
+  - name: DangerBullet
+    uniqueID: 2525572675
     locked: 0
   - name: UI
     uniqueID: 555357299

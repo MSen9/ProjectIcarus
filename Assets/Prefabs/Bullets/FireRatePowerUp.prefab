@@ -97,7 +97,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   endPoint: {fileID: 6926648591621836562}
   autoGetEndPoint: 1
-  ExtendFrames: 60
+  extendTime: 1
   fixVertexPositions: 1
 --- !u!1 &3986148098822674365
 GameObject:
@@ -125,7 +125,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3986148098822674365}
   m_LocalRotation: {x: -0, y: -0, z: 0.9894004, w: 0.14521317}
-  m_LocalPosition: {x: 0, y: 0.5, z: 91.92978}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 0.6, y: 0.6, z: 1}
   m_Children:
   - {fileID: 458776896350030513}
@@ -292,7 +292,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   endPoint: {fileID: 8229838716482724677}
   autoGetEndPoint: 1
-  ExtendFrames: 60
+  extendTime: 1
   fixVertexPositions: 1
 --- !u!1 &6926648591621836562
 GameObject:
@@ -445,8 +445,14 @@ MonoBehaviour:
   - {fileID: 3986148098822674365}
   - {fileID: 6926648591621836562}
   - {fileID: 8229838716482724677}
+  vHandlers: []
   startFullyGrown: 1
   pointScale: 0.6
+  growNormally: 1
+  ignoreLoading: 0
+  firstWaveLoad: 0
+  extendTime: 1
+  doneExtending: 0
 --- !u!114 &7848734010348824238
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -754,5 +760,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   endPoint: {fileID: 3986148098822674365}
   autoGetEndPoint: 1
-  ExtendFrames: 60
+  extendTime: 1
   fixVertexPositions: 1

@@ -70,8 +70,14 @@ MonoBehaviour:
   - {fileID: 7359844624122745381}
   - {fileID: 7555303946465653186}
   - {fileID: 2116671538587071436}
+  vHandlers: []
   startFullyGrown: 1
   pointScale: 1.8
+  growNormally: 1
+  ignoreLoading: 0
+  firstWaveLoad: 0
+  extendTime: 1
+  doneExtending: 0
 --- !u!50 &7775851483074133978
 Rigidbody2D:
   serializedVersion: 4
@@ -164,7 +170,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3433460033459474592, guid: c1b96ecfa0bb7dc448e2a9e1edd1423d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -28.396961
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3433460033459474592, guid: c1b96ecfa0bb7dc448e2a9e1edd1423d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -271,7 +277,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3433460033459474592, guid: c1b96ecfa0bb7dc448e2a9e1edd1423d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -28.396961
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3433460033459474592, guid: c1b96ecfa0bb7dc448e2a9e1edd1423d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -378,7 +384,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3433460033459474592, guid: c1b96ecfa0bb7dc448e2a9e1edd1423d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -28.396961
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3433460033459474592, guid: c1b96ecfa0bb7dc448e2a9e1edd1423d, type: 3}
       propertyPath: m_LocalRotation.w
