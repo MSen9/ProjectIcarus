@@ -17,13 +17,15 @@ public class AllPointManager : MonoBehaviour
     public bool startFullyGrown = false;
     public float pointScale = 0.6f;
     public bool growNormally = true;
-
+ 
     public bool ignoreLoading = false;
     public bool firstWaveLoad = false;
 
     public float extendTime = 1;
     float extendTimeRemaining;
     public bool doneExtending = false;
+
+    Color firstPointColor;
     void OnEnable()
     {
         GetPoints();
@@ -71,6 +73,10 @@ public class AllPointManager : MonoBehaviour
             Transform currChild = transform.GetChild(i);
             if (currChild.gameObject.CompareTag("Point"))
             {
+                if (firstPointColor != null)
+                {
+                    firstPointColor = currChild.gameObject.GetComponent<SpriteRenderer>().color;
+                }
                 points.Add(currChild.GetSiblingIndex(), i);
                 pointObjs.Add(currChild.gameObject);
             }
@@ -221,7 +227,15 @@ public class AllPointManager : MonoBehaviour
             float trueRotate = rotationRate;
             Vector3 pointPos = point.transform.localPosition;
             float totalDist = Mathf.Abs(pointPos.x) + Mathf.Abs(pointPos.y);
-            Vector2 deathMove = new Vector2(pointPos.x/totalDist,pointPos.y/totalDist)*destroyVelocity;
+            Vector2 deathMove;
+            if (totalDist != 0)
+            {
+                deathMove = new Vector2(pointPos.x / totalDist, pointPos.y / totalDist) * destroyVelocity;
+            } else
+            {
+                deathMove = Vector2.zero;
+            }
+            
             //calculates the angle towards the point
             float angleToPoint = Mathf.Atan2(point.transform.localPosition.y, point.transform.localPosition.x);
             angleToPoint = HelperFunctions.NormalizeAngle(angleToPoint);
@@ -243,5 +257,16 @@ public class AllPointManager : MonoBehaviour
         {
             vertex.GetComponent<SpriteRenderer>().color = c;
         }
+    }
+
+    public Color GetPointColor(int pointIndex = 0)
+    {
+        SpriteRenderer sr = pointObjs[pointIndex].GetComponent<SpriteRenderer>();
+        if (sr == null)
+        {
+            Debug.LogError("Error no color found for: " + gameObject.name + " At point index: " + pointIndex.ToString());
+            return Color.white;
+        }
+        return sr.color;
     }
 }

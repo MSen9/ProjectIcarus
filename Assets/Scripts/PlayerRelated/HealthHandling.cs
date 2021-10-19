@@ -145,6 +145,7 @@ public class HealthHandling : MonoBehaviour
                     HelperFunctions.GainPowerUp(bulletInfo.powerType);
 
                     pShooting.currPowerUpImmunity = pShooting.powerUpImmunityTime;
+                    pShooting.powerUpCol = Color.Lerp(Color.black,collision.gameObject.GetComponent<AllPointManager>().GetPointColor(),0.8f);
                     //powerUpIsNoLongerNeeded
                     Destroy(collision.gameObject);
                 }

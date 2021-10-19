@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class PlayerShooting : MonoBehaviour
 {
-    public float powerUpImmunityTime = 3f;
+    public float powerUpImmunityTime = 2f;
     public float currPowerUpImmunity = 0f;
 
     float RELOAD_SPEED_SCALING = 0.85f;
@@ -11,6 +11,9 @@ public class PlayerShooting : MonoBehaviour
     float MANA_GEN_SCALING = 1.1f;
     float defaultShotSize = 1.2f;
     public GameObject sliderObj;
+    AllPointManager apm;
+    bool properColor = true;
+    public Color powerUpCol;
     Slider slider;
     bool gainingMana = true;
     bool overflow = false;
@@ -25,6 +28,7 @@ public class PlayerShooting : MonoBehaviour
     //the penalty for the extra bullets during a burst
     float burstPenaltyMod = 0.25f;
     float burstAimOffset = 30f;
+    float SHOOT_DIST_MOD = 0.8f;
 
 
     public int fireRateBuffs = 0;
@@ -41,6 +45,7 @@ public class PlayerShooting : MonoBehaviour
     {
         slider = sliderObj.GetComponent<Slider>();
         UpdateBuffs();
+        apm = GetComponent<AllPointManager>();
     }
 
     // Update is called once per frame
@@ -71,7 +76,16 @@ public class PlayerShooting : MonoBehaviour
         currPowerUpImmunity -= Time.deltaTime;
 
         //TODO: Change the tint of the main character based on the kind of powerUp just absorbed
-
+        if(currPowerUpImmunity > 0)
+        {
+            properColor = false;
+            apm.SetAllColors(Color.Lerp(Color.white, powerUpCol,(currPowerUpImmunity / powerUpImmunityTime)*2));
+        } else if(properColor == false)
+        {
+            properColor = true;
+            apm.SetAllColors(Color.white);
+        }
+        
 
         //update mana
         //checks for overflow
@@ -141,7 +155,7 @@ public class PlayerShooting : MonoBehaviour
         {
             trueRotation = transform.rotation;
         }
-        GameObject madeBullet = Instantiate(bullet, transform.position + trueRotation * Vector2.up, trueRotation);
+        GameObject madeBullet = Instantiate(bullet, transform.position + trueRotation * Vector2.up*shotScale*SHOOT_DIST_MOD, trueRotation);
         madeBullet.transform.parent = GameObject.FindGameObjectWithTag("BulletList").transform;
         madeBullet.transform.localScale = new Vector3(shotScale, shotScale, 1f);
         //madeBullet.GetComponent<AllPointManager>().InstantGrowAllVertexes(); // corrects the size to fit the new scale

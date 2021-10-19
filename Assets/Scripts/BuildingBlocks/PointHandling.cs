@@ -33,6 +33,7 @@ public class PointHandling : MonoBehaviour
                 vertexes.Add(currChild.gameObject);
             }
         }
+        GetComponent<SpriteRenderer>().color = GetComponent<SpriteRenderer>().color;
     }
 
     // Update is called once per frame
