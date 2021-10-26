@@ -31,6 +31,10 @@ public class MapManager : MonoBehaviour
     public GameObject spawner;
     bool mapOver;
     public GameObject currencyThing;
+
+    public GameObject shop;
+    float WALL_DESTROY_TIME = 3;
+    float SHOP_SPAWN_TIME = 4;
     void OnEnable()
     {
         current = this;
@@ -115,9 +119,40 @@ public class MapManager : MonoBehaviour
             }
             currBullet.GetComponent<AllPointManager>().BreakBullet();
         }
+        //destroy the walls after a delay
+        StartCoroutine(DestroyWalls());
+        //Spawn shop shortly after walls are destroyed
+        StartCoroutine(SpawnShop());
+
+        //disable player shooting
         GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerShooting>().EndShooting();
         mapOver = true;
         Debug.Log("Map is completed!");
+    }
+
+
+    IEnumerator DestroyWalls()
+    {
+        yield return new WaitForSeconds(WALL_DESTROY_TIME);
+        GameObject wallList = GameObject.FindGameObjectWithTag("WallContainer");
+        for (int i = 0; i < wallList.transform.childCount; i++)
+        {
+            GameObject currWall = wallList.transform.GetChild(i).gameObject;
+            AllPointManager apm = currWall.GetComponent<AllPointManager>();
+            if(apm != null)
+            {
+                apm.DeathAnimation(2,0,2f);
+                Destroy(currWall, 2f);
+            }
+        }
+    }
+    IEnumerator SpawnShop()
+    {
+        float shopYSpawn = 22;
+        float shopYEnd = 11.5f;
+        yield return new WaitForSeconds(SHOP_SPAWN_TIME);
+        GameObject madeShop = Instantiate(shop, new Vector3(0,shopYSpawn),Quaternion.identity);
+        madeShop.GetComponent<ShopManager>().yEnd = shopYEnd;
     }
 
     bool NewWave()

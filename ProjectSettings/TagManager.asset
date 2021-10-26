@@ -17,6 +17,7 @@ TagManager:
   - ShopItem
   - ShopItemDesc
   - SVectorHolder
+  - WallContainer
   layers:
   - Default
   - TransparentFX

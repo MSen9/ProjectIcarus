@@ -24,7 +24,9 @@ public class AllPointManager : MonoBehaviour
     public float extendTime = 1;
     float extendTimeRemaining;
     public bool doneExtending = false;
-
+    int VERT_PIXELS = 64;
+    int PIXELS_PER_UNIT = 200;
+    public float unitsPerScale; 
     Color firstPointColor;
     void OnEnable()
     {
@@ -32,6 +34,8 @@ public class AllPointManager : MonoBehaviour
         GetVertexInfo();
         ScalePoints();
         extendTimeRemaining = extendTime;
+        
+        unitsPerScale = (VERT_PIXELS / (float)PIXELS_PER_UNIT) * pointScale;
     }
 
     void DisablePointsSprites()
@@ -104,6 +108,7 @@ public class AllPointManager : MonoBehaviour
     }
     public void InstantGrowAllVertexes()
     {
+        unitsPerScale = (VERT_PIXELS / (float)PIXELS_PER_UNIT) * pointScale;
         doneExtending = true;
         GetPoints();
         GetVertexInfo();
@@ -114,6 +119,7 @@ public class AllPointManager : MonoBehaviour
              vh.InstantGrowVertexes();
             
         }
+        
     }
 
     void ScalePoints()
@@ -219,7 +225,7 @@ public class AllPointManager : MonoBehaviour
         DeathAnimation(destroyVelocity, rotationRate, destroyTime);
     }
 
-    public void DeathAnimation(float destroyVelocity,float rotationRate,float destroyTime)
+    public void DeathAnimation(float destroyVelocity = 0.5f,float rotationRate = 30,float destroyTime = 2f)
     {
         Vector3 myPos = transform.position;
         foreach (GameObject point in pointObjs)

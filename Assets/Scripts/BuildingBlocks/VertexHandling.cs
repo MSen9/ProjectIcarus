@@ -22,10 +22,6 @@ public class VertexHandling : MonoBehaviour
     //used for things like bullets which to not spawn in at the start
     //public bool startFullyGrown = false;
     float totalPointDist;
-    int VERT_PIXELS = 64;
-    int PIXELS_PER_UNIT = 200;
-    //the amount of units crossed for each 'scale' it has. For instance at 2 scale 
-    float unitsPerScale = 0;
 
     float MIN_MOVE_CHECK = 0.001f;
     public bool fixVertexPositions = true;
@@ -44,7 +40,7 @@ public class VertexHandling : MonoBehaviour
         transform.localScale = new Vector3(transform.localScale.x, 0,1f);
         //set the extend rate
         extendTime = pm.extendTime;
-        extendRate = new Vector3(0f, ((totalPointDist / extendTime) / startPoint.transform.localScale.y) / unitsPerScale);
+        extendRate = new Vector3(0f, ((totalPointDist / extendTime) / startPoint.transform.localScale.y) / pm.unitsPerScale);
 
 
     }
@@ -52,7 +48,8 @@ public class VertexHandling : MonoBehaviour
 
     public void InstantGrowVertexes()
     {
-        if(pm == null)
+        growing = false;
+        if (pm == null)
         {
             pm = transform.parent.parent.GetComponent<AllPointManager>();
         }
@@ -66,11 +63,13 @@ public class VertexHandling : MonoBehaviour
         }
         SetBaseVertexAngle();
         SetToFullVertexLength();
+        
     }
 
     public void SetVertexLength(float growthPercent)
     {
-        transform.localScale = new Vector3(transform.localScale.x, ((totalPointDist / unitsPerScale) / startPoint.transform.parent.localScale.y)*(growthPercent/100), 1f);
+        float objScale = startPoint.transform.parent.lossyScale.y;
+        transform.localScale = new Vector3(transform.localScale.x, ((totalPointDist / pm.unitsPerScale) / objScale)*(growthPercent/100), 1f);
     }
 
     bool GetVertexBaseInfo()
@@ -116,7 +115,6 @@ public class VertexHandling : MonoBehaviour
             }      
             //autoGetEndPoint = false;
         }
-        unitsPerScale = (VERT_PIXELS / (float)PIXELS_PER_UNIT) * startPoint.transform.localScale.y;
         return true;
     }
 
@@ -135,7 +133,7 @@ public class VertexHandling : MonoBehaviour
 
     public void SetToFullVertexLength()
     {
-        transform.localScale = new Vector3(transform.localScale.x, (totalPointDist / unitsPerScale)/startPoint.transform.parent.localScale.y, 1f);
+        SetVertexLength(100f);
     }
 
     // Update is called once per frame
@@ -164,9 +162,9 @@ public class VertexHandling : MonoBehaviour
         else if (growing)
         {
             transform.localScale += extendRate*Time.deltaTime;
-            if (totalPointDist < transform.localScale.y * unitsPerScale)
+            if (totalPointDist < transform.localScale.y * pm.unitsPerScale)
             {
-                transform.localScale = new Vector3(transform.localScale.x, totalPointDist / unitsPerScale,1f);
+                SetToFullVertexLength();
                 growing = false;
                 //also record for positional changes
                 RefreshLastPositions();

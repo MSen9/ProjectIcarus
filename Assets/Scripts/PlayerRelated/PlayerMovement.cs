@@ -21,7 +21,9 @@ public class PlayerMovement : MonoBehaviour
     KeyCode rightKey;
     public Rigidbody2D rb;
     Collider2D currShopDescSource;
-    
+    public float cameraHalfWidth;
+    public float cameraHalfHeight;
+    float cameraWiggleRoom = 0.5f;
 
 
     //code for managing walls that the player is touching 
@@ -35,6 +37,9 @@ public class PlayerMovement : MonoBehaviour
         leftKey = KeyCode.A;
         rightKey = KeyCode.D;
         rb = GetComponent<Rigidbody2D>();
+
+        cameraHalfHeight = Camera.main.orthographicSize + cameraWiggleRoom;
+        cameraHalfWidth = cameraHalfHeight * (Screen.width / (float)Screen.height) + cameraWiggleRoom;
     }
 
     // Update is called once per frame
@@ -142,28 +147,49 @@ public class PlayerMovement : MonoBehaviour
         */
             rb.MovePosition(new Vector2(transform.position.x + currSpeed.x * frameMult,
                 transform.position.y + currSpeed.y * frameMult));
-        
 
+        CheckPlayerOutOfBounds();
     }
-    /*
-    void RemoveWallRestrictions(DirTypes dir)
-    {
-        List<GameObject> toRemove = new List<GameObject>();
 
-        foreach (GameObject blocksGo in restrictedMovement.Keys)
+    void CheckPlayerOutOfBounds()
+    {
+        //helps stop characters from repeatedly moving to the left and right sides of the screen
+        float closerToMiddleMove = 0.25f;
+        
+        if (transform.position.x > cameraHalfWidth)
         {
-            if(restrictedMovement[blocksGo][(int)dir] == false)
+            rb.MovePosition(new Vector2(transform.position.x * -1 + closerToMiddleMove, transform.position.y));
+        } else if (transform.position.x < cameraHalfWidth * -1)
+        {
+            rb.MovePosition(new Vector2(transform.position.x * -1 - closerToMiddleMove, transform.position.y));
+        }
+        if (transform.position.y > cameraHalfHeight )
+        {
+            rb.MovePosition(new Vector2(transform.position.x, transform.position.y * -1 + closerToMiddleMove));
+        } else if (transform.position.y < cameraHalfHeight * -1)
+        {
+            rb.MovePosition(new Vector2(transform.position.x, transform.position.y * -1 - closerToMiddleMove));
+        }
+    }
+        /*
+        void RemoveWallRestrictions(DirTypes dir)
+        {
+            List<GameObject> toRemove = new List<GameObject>();
+
+            foreach (GameObject blocksGo in restrictedMovement.Keys)
             {
-                toRemove.Add(blocksGo);
+                if(restrictedMovement[blocksGo][(int)dir] == false)
+                {
+                    toRemove.Add(blocksGo);
+                }
+            }
+            for (int i = 0; i < toRemove.Count; i++)
+            {
+                restrictedMovement.Remove(toRemove[i]);
             }
         }
-        for (int i = 0; i < toRemove.Count; i++)
-        {
-            restrictedMovement.Remove(toRemove[i]);
-        }
-    }
-    */
-    private void OnTriggerEnter2D(Collider2D collision)
+        */
+        private void OnTriggerEnter2D(Collider2D collision)
     {
         //Debug.Log("Main bullet has hit trigger");
         if (collision.tag == "ShopItem") {

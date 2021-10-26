@@ -59,7 +59,7 @@ GameObject:
   - component: {fileID: 4090538969260364614}
   - component: {fileID: 4090538969260364615}
   m_Layer: 0
-  m_Name: BasicFireRatePowerUp
+  m_Name: BasicFireRatePUP
   m_TagString: ShopItem
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -3,13 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public enum BuyEffects
-{
-    none,
-    gainHp,
-    gainPowerUp,
-    losePowerUp
-}
+
 public class ShopItem : MonoBehaviour
 {
     
