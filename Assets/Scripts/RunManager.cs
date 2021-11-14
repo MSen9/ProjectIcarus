@@ -27,12 +27,20 @@ public enum EnemyIds
 }
 public class RunManager : MonoBehaviour
 {
+    
     public int runDifficulty = 10;
     //int level = 0;
     public List<EnemyInfo> enemies;
+
+    public static RunManager current;
     // Start is called before the first frame update
     void OnEnable()
     {
+        if (current != null)
+        {
+            return;
+        }
+        current = this;
         DontDestroyOnLoad(this.gameObject);
         enemies = new List<EnemyInfo>();
         enemies.Add(new EnemyInfo("FireRateEnemy", EnemyIds.BasicFireRate, 2, 1.5f));

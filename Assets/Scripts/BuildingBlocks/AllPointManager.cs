@@ -231,7 +231,7 @@ public class AllPointManager : MonoBehaviour
         foreach (GameObject point in pointObjs)
         {
             float trueRotate = rotationRate;
-            Vector3 pointPos = point.transform.localPosition;
+            Vector3 pointPos = point.transform.position - myPos;
             float totalDist = Mathf.Abs(pointPos.x) + Mathf.Abs(pointPos.y);
             Vector2 deathMove;
             if (totalDist != 0)
@@ -246,9 +246,16 @@ public class AllPointManager : MonoBehaviour
             float angleToPoint = Mathf.Atan2(point.transform.localPosition.y, point.transform.localPosition.x);
             angleToPoint = HelperFunctions.NormalizeAngle(angleToPoint);
             float pointRotation = HelperFunctions.NormalizeAngle(point.transform.localRotation.eulerAngles.z);
-             trueRotate *= CompareRotateAwayDirection(pointRotation, angleToPoint);
-
-            point.GetComponent<PointHandling>().BecomeDead(deathMove, trueRotate, destroyTime);
+            trueRotate *= CompareRotateAwayDirection(pointRotation, angleToPoint);
+            PointHandling ph = point.GetComponent<PointHandling>();
+            if(ph != null)
+            {
+                ph.BecomeDead(deathMove, trueRotate, destroyTime);
+            } else
+            {
+                Debug.LogError("Error: Point failed to be destroyed, no point handling object. Point obj is: " + gameObject.name);
+            }
+           
         }
     }
 

@@ -16,15 +16,14 @@ public class PlayerShooting : MonoBehaviour
     public Color powerUpCol;
     Slider slider;
     bool gainingMana = true;
-    bool overflow = false;
     public float manaValue = 75;
     public float manaGenRate = 5; //the rate at which mana charges every second
     float baseManaGenRate = 5;
     float bulletManaCost = 10;
     float baseBulletManaCost = 10;
-    float overFlowEmptyRate = 100;
     float maxMana = 100;
 
+    CamManager sShaker;
     //the penalty for the extra bullets during a burst
     float burstPenaltyMod = 0.25f;
     float burstAimOffset = 30f;
@@ -40,18 +39,45 @@ public class PlayerShooting : MonoBehaviour
     float nextShotTime = 0;
     public GameObject bullet;
     bool canShoot = true;
+
+
+    HealthHandling hh;
+    SoundPlayer sPlayer;
     // Start is called before the first frame update
     void Start()
     {
-        slider = sliderObj.GetComponent<Slider>();
+        if(BetweenMapInfo.current != null && BetweenMapInfo.current.hasInfoSaved)
+        {
+            PlayerSaveInfo currInfo = BetweenMapInfo.current.savedInfo;
+            for (int i = 0; i < currInfo.fireRatePowerUps; i++)
+            {
+                HelperFunctions.GainPowerUp(PowerUpType.fireRate);
+            }
+            for (int i = 0; i < currInfo.manaGenPowerUps; i++)
+            {
+                HelperFunctions.GainPowerUp(PowerUpType.manaGen);
+            }
+            for (int i = 0; i < currInfo.shotSizePowerUps; i++)
+            {
+                HelperFunctions.GainPowerUp(PowerUpType.shotSize);
+            }
+        }
+        if(sliderObj != null)
+        {
+            slider = sliderObj.GetComponent<Slider>();
+        }
+        
         UpdateBuffs();
         apm = GetComponent<AllPointManager>();
+        sShaker = Camera.main.GetComponent<CamManager>();
+        hh = GetComponent<HealthHandling>();
+        sPlayer = GetComponent<SoundPlayer>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (MapManager.current.doneLoading == false)
+        if (MapManager.current == null || MapManager.current.doneLoading == false || MapManager.current.mapOver)
         {
             return;
         }
@@ -75,7 +101,7 @@ public class PlayerShooting : MonoBehaviour
         }
         currPowerUpImmunity -= Time.deltaTime;
 
-        //TODO: Change the tint of the main character based on the kind of powerUp just absorbed
+        //Changes the tint of the main character based on the kind of powerUp just absorbed
         if(currPowerUpImmunity > 0)
         {
             properColor = false;
@@ -96,15 +122,7 @@ public class PlayerShooting : MonoBehaviour
         if (gainingMana)
         {
             manaValue += manaGenRate * Time.deltaTime;
-        } else if (overflow)
-        {
-            manaValue -= overFlowEmptyRate * Time.deltaTime;
-            if(manaValue <= 0)
-            {
-                overflow = false;
-                gainingMana = true;
-            }
-        }
+        } 
 
         if (manaValue >= maxMana)
         {
@@ -114,7 +132,11 @@ public class PlayerShooting : MonoBehaviour
         //update the slider
         manaValue = Mathf.Clamp(manaValue,0,100);
         //float oldVal = slider.value;
-        slider.value = GetManaRatio();
+        if(slider != null)
+        {
+            slider.value = GetManaRatio();
+        }
+        
     }
 
     public float GetManaRatio()
@@ -135,7 +157,7 @@ public class PlayerShooting : MonoBehaviour
         {
             nextShotTime += reloadSpeed;
         }
-        
+        sShaker.ShakeCamera(new Vector3(0.05f, 0.05f),0.1f);
         
         
 
@@ -183,5 +205,10 @@ public class PlayerShooting : MonoBehaviour
         shotScale = defaultShotSize * Mathf.Pow(SHOT_SIZE_SCALING, shotSizeBuffs);
         manaGenRate = baseManaGenRate * Mathf.Pow(MANA_GEN_SCALING, manaGenBuffs);
         
+    }
+
+    public void PowerUpSound(AudioClip ac)
+    {
+        sPlayer.PlaySound(ac, 0.25f);
     }
 }

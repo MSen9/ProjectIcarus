@@ -30,6 +30,9 @@ public class HealthHandling : MonoBehaviour
     //Collider2D[] colliders;
     AllPointManager pm;
     MapManager mapManager;
+
+    public AudioClip damageSound;
+    public float damageVolume = 0.5f;
     void Start()
     {
         //colliders = GetComponents<BoxCollider2D>();
@@ -37,14 +40,16 @@ public class HealthHandling : MonoBehaviour
         bulletIgnoreTimes = new Dictionary<Collider2D,float>();
         if (isPlayer)
         {
+            if(BetweenMapInfo.current != null && BetweenMapInfo.current.hasInfoSaved)
+            {
+                health = BetweenMapInfo.current.savedInfo.health;
+            }
             healthPupTracker = GameObject.FindGameObjectWithTag("Canvas").GetComponent<HealthPowerUpTracker>();
             for (int i = 0; i < health; i++)
             {
                 healthPupTracker.MakeUIObj(trackedTypes.health);
             }
-        }
-
-        if (!isPlayer)
+        }else if (isPlayer == false)
         {
             mapManager = GameObject.FindGameObjectWithTag("MapManager").GetComponent<MapManager>();
             mapManager.EnemySpawn(gameObject);
@@ -82,7 +87,7 @@ public class HealthHandling : MonoBehaviour
                     if (pShooting != null)
                     {
                         healthPupTracker.RemoveUIObj(trackedTypes.health);
-                        pShooting.currPowerUpImmunity = pShooting.powerUpImmunityTime;
+                        //pShooting.currPowerUpImmunity = pShooting.powerUpImmunityTime;
                     }
 
                     currInvincibilityTime = invincibilityTime;
@@ -94,7 +99,15 @@ public class HealthHandling : MonoBehaviour
                     return;
                 }
                 health--;
-                
+                if (isPlayer)
+                {
+                    //damage sound and camera shake
+                    if(damageSound != null)
+                    {
+                        GetComponent<SoundPlayer>().PlaySound(damageSound, damageVolume);
+                    }
+                    Camera.main.GetComponent<CamManager>().ShakeCamera(new Vector3(0.25f, 0.25f), 1f);
+                }
                 bulletInfo.alreadyHit.Add(gameObject);
                 if(health > 0)
                 {
@@ -134,7 +147,7 @@ public class HealthHandling : MonoBehaviour
                 if (isPlayer)
                 {
                     PlayerShooting pShooting = gameObject.GetComponent<PlayerShooting>();
-                    if(pShooting.currPowerUpImmunity > 0f)
+                    if(pShooting.currPowerUpImmunity > 0f || currInvincibilityTime > 0)
                     {
                         //immune, ignore powerUp
                         return;
@@ -146,6 +159,7 @@ public class HealthHandling : MonoBehaviour
 
                     pShooting.currPowerUpImmunity = pShooting.powerUpImmunityTime;
                     pShooting.powerUpCol = Color.Lerp(Color.black,collision.gameObject.GetComponent<AllPointManager>().GetPointColor(),0.8f);
+                    SoundPlayer.MakeOnlySound(bulletInfo.powerUpHit, 0.5f);
                     //powerUpIsNoLongerNeeded
                     Destroy(collision.gameObject);
                 }

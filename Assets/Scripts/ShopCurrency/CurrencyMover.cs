@@ -5,7 +5,8 @@ using UnityEngine;
 public class CurrencyMover : MonoBehaviour
 {
     // Start is called before the first frame update
-    public float value = 1;
+    public int value = 1;
+    public AudioClip moneySound;
     float MAX_SPEED = 20;
     float acceleration = 2f;
     float speed = 2;
@@ -42,7 +43,8 @@ public class CurrencyMover : MonoBehaviour
     {
         if(collision.gameObject.tag == "Player")
         {
-            collision.gameObject.GetComponent<CurrencyManager>().currencyThing += value;
+            collision.gameObject.GetComponent<CurrencyManager>().currency += value;
+            collision.gameObject.GetComponent<SoundPlayer>().PlaySound(moneySound, 0.5f);
             Destroy(gameObject);
         }
     }

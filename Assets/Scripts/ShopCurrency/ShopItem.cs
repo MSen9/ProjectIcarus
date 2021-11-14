@@ -10,7 +10,7 @@ public class ShopItem : MonoBehaviour
     public BuyEffects buyEffect;
     public PowerUpType pType1 = PowerUpType.none;
     public PowerUpType pType2 = PowerUpType.none;
-    public float cost = 0;
+    public int cost = 0;
     public float textYGap = 5.2f;
     GameObject priceVectorText;
     
@@ -34,12 +34,12 @@ public class ShopItem : MonoBehaviour
 
     public void PurchaseItem()
     {
-        if(CurrencyManager.current.currencyThing < cost)
+        if(CurrencyManager.current.currency < cost)
         {
             return;
         }
 
-        CurrencyManager.current.currencyThing -= cost;
+        CurrencyManager.current.currency -= cost;
         ShopEffect();
         float destroyTime = 2;
         for (int i = 0; i < gameObject.transform.childCount; i++)

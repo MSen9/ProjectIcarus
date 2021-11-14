@@ -24,6 +24,10 @@ public class StringToVectorManager : MonoBehaviour
     // Start is called before the first frame update
     void OnEnable()
     {
+        if (current != null)
+        {
+            return;
+        }
         current = this;
         DontDestroyOnLoad(this.gameObject);
         vectorChars = new Dictionary<char, GameObject>();

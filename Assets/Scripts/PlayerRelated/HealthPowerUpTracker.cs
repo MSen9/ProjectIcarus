@@ -39,6 +39,7 @@ public class HealthPowerUpTracker : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         ps = player.GetComponent<PlayerShooting>();
         hh = player.GetComponent<HealthHandling>();
+        
     }
 
     void SetUpLists()
@@ -82,6 +83,7 @@ public class HealthPowerUpTracker : MonoBehaviour
         SetUpLists();
         int tType = (int)type;
         GameObject madeObj = Instantiate(objTypes[tType],groups[tType].transform.position,Quaternion.identity);
+        madeObj.transform.parent = groups[tType].transform;
         madeObj.transform.localScale *= scales[tType];
         madeObj.transform.position += new Vector3(xSpacing * counts[tType], 0,0);
         trackedObjs[tType].Add(madeObj);

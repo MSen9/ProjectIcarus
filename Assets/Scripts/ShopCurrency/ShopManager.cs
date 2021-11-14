@@ -53,7 +53,6 @@ public class ShopManager : MonoBehaviour
         possibleItems.Add(new ShopItemInfo("BasicShotSizePUP", -10, 5));
         //make the shop items
         MakeShopItems();
-
         startPos = transform.position;
     }
 
@@ -111,7 +110,7 @@ public class ShopManager : MonoBehaviour
         if(yEndReached == false)
         {
             moveTime += Time.deltaTime;
-            transform.position = Vector3.Slerp(startPos, new Vector3(transform.position.x, yEnd), moveTime / maxMoveTime);
+            transform.position = Vector3.Slerp(startPos, new Vector3(startPos.x, yEnd), moveTime / maxMoveTime);
             if(moveTime >= maxMoveTime)
             {
                 yEndReached = true;
@@ -136,8 +135,10 @@ public class ShopManager : MonoBehaviour
 
     public void MakeItemDesc(string desc)
     {
+        RemoveItemDesc();
         currDesc = StringToVectorManager.current.StringToVectors(desc,1,StringAlignment.center);
-        currDesc.transform.position = new Vector3(0, -10);
+        currDesc.transform.position = CamManager.current.camFinalSpot +  new Vector3(0, -10);
+        currDesc.transform.parent = this.transform;
     }
 
     public void RemoveItemDesc()

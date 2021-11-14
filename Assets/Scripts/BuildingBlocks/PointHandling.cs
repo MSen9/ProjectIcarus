@@ -87,12 +87,13 @@ public class PointHandling : MonoBehaviour
     
     public void BecomeDamaged(Vector3 move,float rotateZ, float damageTime)
     {
+        
         if (damaged)
         {
             //increase the effect of the current damage (with diminishing returns)
             damageInstances++;
-            basePos += move / damageInstances;
-            baseRotate += transform.localRotation.eulerAngles.z / damageInstances;
+            damageMove += move / damageInstances;
+            damageRotation += rotateZ / damageInstances;
 
             if (backToNormalState)
             {
@@ -118,6 +119,9 @@ public class PointHandling : MonoBehaviour
                 vh.fixVertexPositions = false;
             }
         }
+        float transformCorruptMod = 1 / 20f;
+        basePos += transformCorruptMod * move;
+        baseRotate += transformCorruptMod * rotateZ;
     }
 
     public void BecomeDead(Vector2 move, float rotateRate, float deathTime)

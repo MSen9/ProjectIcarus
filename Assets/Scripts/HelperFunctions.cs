@@ -4,6 +4,7 @@ using UnityEngine;
 
 public static class HelperFunctions
 {
+    //retruns the angle between two positions in degrees
     public static float AngleBetween(Vector3 pos1,Vector3 pos2)
     {
         float ANGLE_OFFSET = -90;
@@ -105,4 +106,35 @@ public static class HelperFunctions
 
         pShooting.UpdateBuffs();
     }
+
+    public static List<Vector3> GetEquilateralShapePointPositions(int pointCount, float pointCenterDist, float angleOffset)
+    {
+        List<Vector3> pointPositions = new List<Vector3>();
+        angleOffset = angleOffset * Mathf.Deg2Rad;
+        float equWallAngle = 180 * ((pointCount - 2) / (float)pointCount);
+        Vector3 pointPos;
+        Vector3 lastEndPointPos = Vector3.zero;
+        for (int i = 0; i < pointCount; i++)
+        {
+            if (i == 0)
+            {
+                //firstPointGen
+                pointPos = new Vector3(Mathf.Cos(angleOffset), Mathf.Sin(angleOffset)) * pointCenterDist;
+
+            }
+            else
+            {
+                pointPos = lastEndPointPos;
+
+            }
+            float angleBetween = AngleBetween(Vector3.zero, pointPos);
+            float endAngle = (angleBetween + (90 - equWallAngle)) * Mathf.Deg2Rad;
+            lastEndPointPos = new Vector3(Mathf.Cos(endAngle), Mathf.Sin(endAngle)) * pointCenterDist;
+
+            pointPositions.Add(pointPos);
+        }
+
+        return pointPositions;
+    }
+    
 }

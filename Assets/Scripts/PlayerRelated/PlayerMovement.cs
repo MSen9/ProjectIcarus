@@ -12,9 +12,8 @@ public enum DirTypes
 public class PlayerMovement : MonoBehaviour
 {
     Vector2 currSpeed;
-    float maxSpeed = 3f;
-    float accelRate = 1/2f;
-    float frameMult = 1 / 50f;
+    float maxSpeed = 5f;
+    float accelRate = 3/4f;
     KeyCode upKey;
     KeyCode downKey;
     KeyCode leftKey;
@@ -24,11 +23,19 @@ public class PlayerMovement : MonoBehaviour
     public float cameraHalfWidth;
     public float cameraHalfHeight;
     float cameraWiggleRoom = 0.5f;
+    Vector3 camCenterPos;
 
 
     //code for managing walls that the player is touching 
     Dictionary<GameObject, bool[]> restrictedMovement;
+    public Vector3 endLevelPoint;
 
+    public bool startShrinking = false;
+    public float gravityRate = 10f;
+
+    bool hasStartScale = false;
+    bool playerBoundsSet = false;
+    Vector3 startScale;
     // Start is called before the first frame update
     void Start()
     {
@@ -38,13 +45,32 @@ public class PlayerMovement : MonoBehaviour
         rightKey = KeyCode.D;
         rb = GetComponent<Rigidbody2D>();
 
-        cameraHalfHeight = Camera.main.orthographicSize + cameraWiggleRoom;
-        cameraHalfWidth = cameraHalfHeight * (Screen.width / (float)Screen.height) + cameraWiggleRoom;
+        
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        if(MapManager.current == null)
+        {
+            return;
+        }
+        if (MapManager.current.goingToNextLevel)
+        {
+            if (MapManager.current.nextLevelFadeOut)
+            {
+                if(hasStartScale == false)
+                {
+                    hasStartScale = true;
+                    startScale = transform.localScale;
+                }
+                transform.localScale -= startScale * Time.deltaTime / MapManager.current.fadeOutTime;
+            }
+            GravitateTowardsPoint(endLevelPoint,gravityRate);
+            rb.MovePosition(new Vector2(transform.position.x + currSpeed.x * Time.fixedDeltaTime,
+                transform.position.y + currSpeed.y * Time.fixedDeltaTime));
+            return;
+        }
         if (MapManager.current.doneLoading == false)
         {
             return;
@@ -145,30 +171,50 @@ public class PlayerMovement : MonoBehaviour
 
         } 
         */
-            rb.MovePosition(new Vector2(transform.position.x + currSpeed.x * frameMult,
-                transform.position.y + currSpeed.y * frameMult));
+        rb.MovePosition(new Vector2(transform.position.x + currSpeed.x * Time.fixedDeltaTime,
+                transform.position.y + currSpeed.y * Time.fixedDeltaTime));
 
-        CheckPlayerOutOfBounds();
+        if (playerBoundsSet)
+        {
+            CheckPlayerOutOfBounds();
+        }
+        
     }
 
+    public void SetCamBounds()
+    {
+        cameraHalfHeight = Camera.main.orthographicSize + cameraWiggleRoom;
+        cameraHalfWidth = cameraHalfHeight * (Screen.width / (float)Screen.height) + cameraWiggleRoom;
+        camCenterPos = transform.position;
+        playerBoundsSet = true;
+    }
+
+
+    void GravitateTowardsPoint(Vector3 point, float gravitateRate = 16f)
+    {
+        Vector3 totalDist =  point - transform.position;
+        totalDist.Normalize();
+        currSpeed.x += gravitateRate * totalDist.x * Time.deltaTime;
+        currSpeed.y += gravitateRate * totalDist.y * Time.deltaTime;
+    }
     void CheckPlayerOutOfBounds()
     {
         //helps stop characters from repeatedly moving to the left and right sides of the screen
         float closerToMiddleMove = 0.25f;
         
-        if (transform.position.x > cameraHalfWidth)
+        if (transform.position.x > cameraHalfWidth + camCenterPos.x)
         {
-            rb.MovePosition(new Vector2(transform.position.x * -1 + closerToMiddleMove, transform.position.y));
-        } else if (transform.position.x < cameraHalfWidth * -1)
+            rb.MovePosition(new Vector2(2* camCenterPos.x - transform.position.x + closerToMiddleMove, transform.position.y));
+        } else if (transform.position.x < cameraHalfWidth * -1 + camCenterPos.x)
         {
-            rb.MovePosition(new Vector2(transform.position.x * -1 - closerToMiddleMove, transform.position.y));
+            rb.MovePosition(new Vector2(2 * camCenterPos.x - transform.position.x - closerToMiddleMove, transform.position.y));
         }
-        if (transform.position.y > cameraHalfHeight )
+        if (transform.position.y > cameraHalfHeight + camCenterPos.y)
         {
-            rb.MovePosition(new Vector2(transform.position.x, transform.position.y * -1 + closerToMiddleMove));
-        } else if (transform.position.y < cameraHalfHeight * -1)
+            rb.MovePosition(new Vector2(transform.position.x, 2 * camCenterPos.y - transform.position.y + closerToMiddleMove));
+        } else if (transform.position.y < cameraHalfHeight * -1 + camCenterPos.y)
         {
-            rb.MovePosition(new Vector2(transform.position.x, transform.position.y * -1 - closerToMiddleMove));
+            rb.MovePosition(new Vector2(transform.position.x, 2 * camCenterPos.y - transform.position.y - closerToMiddleMove));
         }
     }
         /*

@@ -19,16 +19,17 @@ public class VertexHandling : MonoBehaviour
     float deathTime = 0;
     float totalDeathTime;
     bool growing = true;
+    bool canLoad = false;
     //used for things like bullets which to not spawn in at the start
     //public bool startFullyGrown = false;
     float totalPointDist;
 
-    float MIN_MOVE_CHECK = 0.001f;
+    //float MIN_MOVE_CHECK = 0.001f;
     public bool fixVertexPositions = true;
     void Start()
     {
         pm = transform.parent.parent.GetComponent<AllPointManager>();
-        if (pm.startFullyGrown)
+        if (pm.startFullyGrown || MapManager.current == null)
         {
             InstantGrowVertexes();
             return;
@@ -140,11 +141,11 @@ public class VertexHandling : MonoBehaviour
     void Update()
     {
         //stop the update early
-        if(MapManager.current.vectorLoad == false)
-        {
+        if (canLoad == false && (MapManager.current == null || MapManager.current.vectorLoad == false))
+        { 
             return;
         }
-
+        canLoad = true;
         //when valid change the rotation to face towards end point and grow until you reach it.
         //use the scale and distance between points to measure if it is done growing
         if (shrinking)
@@ -172,6 +173,7 @@ public class VertexHandling : MonoBehaviour
         } else
         {
             //do code to check for point moving and update the vetex locations
+            /*
             if (fixVertexPositions && endPoint != null)
             {
                 if((lastStartPointPos - startPoint.transform.localPosition).magnitude > MIN_MOVE_CHECK ||
@@ -182,6 +184,7 @@ public class VertexHandling : MonoBehaviour
                 }
                 RefreshLastPositions();
             }
+            */
 
 
             

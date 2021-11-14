@@ -5,7 +5,7 @@ using UnityEngine;
 public class CurrencyManager : MonoBehaviour
 {
 
-    public float currencyThing = 0;
+    public int currency = 0;
     public GameObject currencyPos;
     public GameObject currencySymbol;
     GameObject activeSymbol;
@@ -22,12 +22,16 @@ public class CurrencyManager : MonoBehaviour
         current = this;
         lastMoneyString = moneyString;
         stvManager = GameObject.FindGameObjectWithTag("StoVManager").GetComponent<StringToVectorManager>();
+        if (BetweenMapInfo.current != null && BetweenMapInfo.current.hasInfoSaved)
+        {
+            currency = BetweenMapInfo.current.savedInfo.currency;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        moneyString = ":" + currencyThing.ToString();
+        moneyString = ":" + currency.ToString();
         if(lastMoneyString != moneyString)
         {
             if(currencyVectors != null)
@@ -42,7 +46,7 @@ public class CurrencyManager : MonoBehaviour
         if(activeSymbol == null)
         {
             activeSymbol = Instantiate(currencySymbol, currencyPos.transform.position, Quaternion.identity);
-            //activeSymbol.transform.parent = currencyPos.transform;
+            activeSymbol.transform.parent = currencyPos.transform;
             activeSymbol.GetComponent<AllPointManager>().SetAllColors(new Color(moneyCols[0],moneyCols[1],moneyCols[2]));
         }
     }

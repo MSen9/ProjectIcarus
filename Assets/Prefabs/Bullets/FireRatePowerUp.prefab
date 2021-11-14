@@ -445,6 +445,7 @@ MonoBehaviour:
   - {fileID: 3986148098822674365}
   - {fileID: 6926648591621836562}
   - {fileID: 8229838716482724677}
+  vertexObjs: []
   vHandlers: []
   startFullyGrown: 1
   pointScale: 0.6
@@ -453,6 +454,7 @@ MonoBehaviour:
   firstWaveLoad: 0
   extendTime: 1
   doneExtending: 0
+  unitsPerScale: 0
 --- !u!114 &7848734010348824238
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -467,6 +469,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletType: 1
   powerType: 1
+  shotSound: {fileID: 0}
+  powerUpHit: {fileID: 8300000, guid: 6d169dd710472d342b69dd246dfb7467, type: 3}
   alreadyHit: []
 --- !u!50 &4166391748717907314
 Rigidbody2D:
