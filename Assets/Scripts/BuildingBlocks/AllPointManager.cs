@@ -250,7 +250,16 @@ public class AllPointManager : MonoBehaviour
             PointHandling ph = point.GetComponent<PointHandling>();
             if(ph != null)
             {
-                ph.BecomeDead(deathMove, trueRotate, destroyTime);
+                try
+                {
+                    ph.BecomeDead(deathMove, trueRotate, destroyTime);
+                } catch
+                {
+                    Debug.LogError("Error trying to do point death animations. deathMove: " + deathMove.ToString() +
+                        " trueRotate: " + trueRotate.ToString() + 
+                        " destroyTime: " + destroyTime.ToString());
+                }
+                
             } else
             {
                 Debug.LogError("Error: Point failed to be destroyed, no point handling object. Point obj is: " + gameObject.name);

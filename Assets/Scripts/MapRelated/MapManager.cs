@@ -42,6 +42,7 @@ public class MapManager : MonoBehaviour
 
     public GameObject wall;
     public GameObject spawnSpot;
+    RunNode currMapInfo;
     
     //bool debugOn = true;
     void OnEnable()
@@ -52,17 +53,15 @@ public class MapManager : MonoBehaviour
         goingToNextLevel = false;
         nextLevelFadeOut = false;
         currWave = 0;
-        DynamicMapGen(20f, 20);
+        currMapInfo = RunRouteManager.current.GetCurrentRunNode();
         spawnLocations = new List<Transform>();
-        for (int i = 0; i < spawnLocationParent.transform.childCount; i++)
-        {
-            spawnLocations.Add(spawnLocationParent.transform.GetChild(i));
-        }
+        ExtractMap();
+        
 
         //hardcoded values for now
         currWave = 0;
         waveDifficultyScaling = 5;
-        totalWaves = 1;
+        totalWaves = currMapInfo.waves;
 
         rm = GameObject.FindGameObjectWithTag("RunManager").GetComponent<RunManager>();
         livingEnemies = new List<GameObject>();
@@ -391,6 +390,29 @@ public class MapManager : MonoBehaviour
             madeSpawn.transform.parent = spawnLocationParent.transform;
 
             //eachWall.GetComponent<WallManager>().UpdateWallCollider();
+        }
+    }
+
+    void ExtractMap()
+    {
+        GameObject runNode = RunRouteManager.current.activeNodeObj;
+        runNode.transform.position = Vector3.zero;
+        GameObject wallHolder = GameObject.FindGameObjectWithTag("WallContainer");
+        wallHolder.transform.parent = this.transform;
+        wallHolder.transform.localScale = Vector3.one/RunRouteManager.current.scaleMod;
+        Destroy(runNode);
+        float spawnerFromWallDist = 0.2f;
+        for (int i = 0; i < wallHolder.transform.childCount; i++)
+        {
+            GameObject eachWall = wallHolder.transform.GetChild(i).gameObject;
+            Vector3 spawnPointPos = Vector3.Lerp(eachWall.transform.position, Vector3.zero, spawnerFromWallDist);
+            GameObject madeSpawn = Instantiate(spawnSpot, spawnPointPos, Quaternion.identity);
+            madeSpawn.transform.parent = spawnLocationParent.transform;
+        }
+
+        for (int i = 0; i < spawnLocationParent.transform.childCount; i++)
+        {
+            spawnLocations.Add(spawnLocationParent.transform.GetChild(i));
         }
     }
 }
