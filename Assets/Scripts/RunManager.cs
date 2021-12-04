@@ -23,7 +23,8 @@ public enum EnemyIds
 {
     BasicFireRate,
     BasicShotSize,
-    BasicManaGen
+    BasicManaGen,
+    BasicShotPen
 }
 public class RunManager : MonoBehaviour
 {
@@ -47,6 +48,7 @@ public class RunManager : MonoBehaviour
         enemies.Add(new EnemyInfo("FireRateEnemy", EnemyIds.BasicFireRate, 2, 1.5f));
         enemies.Add(new EnemyInfo("ManaGenEnemy", EnemyIds.BasicManaGen, 3, 1.8f));
         enemies.Add(new EnemyInfo("ShotSizeEnemy", EnemyIds.BasicShotSize, 6, 3f));
+        enemies.Add(new EnemyInfo("ShotPenEnemy", EnemyIds.BasicShotSize, 4, 2f));
 
     }
 

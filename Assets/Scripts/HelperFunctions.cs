@@ -71,6 +71,22 @@ public static class HelperFunctions
                 healthPupTracker.MakeUIObj(trackedTypes.manaGen);
                 pShooting.manaGenBuffs++;
                 break;
+            case PowerUpType.shotPen:
+                healthPupTracker.MakeUIObj(trackedTypes.shotPen);
+                pShooting.shotPenBuffs++;
+                break;
+            case PowerUpType.shotSpread:
+                healthPupTracker.MakeUIObj(trackedTypes.shotSpread);
+                pShooting.shotSpreadBuffs++;
+                break;
+            case PowerUpType.shotExplode:
+                healthPupTracker.MakeUIObj(trackedTypes.shotExplode);
+                pShooting.shotExplodeBuffs++;
+                break;
+            case PowerUpType.shotSplit:
+                healthPupTracker.MakeUIObj(trackedTypes.shotSplit);
+                pShooting.shotSplitBuffs++;
+                break;
             default:
                 Debug.LogError("Error: No powerup type on powerUp");
                 break;

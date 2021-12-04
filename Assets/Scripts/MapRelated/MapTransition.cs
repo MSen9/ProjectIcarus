@@ -2,9 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
-
 public class MapTransition : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -18,14 +15,16 @@ public class MapTransition : MonoBehaviour
     float exitRadius;
     float enterRadius;
     float spinSpeed = 180f;
-    float innerDist = 0.7f;
+    float innerDist = 1.4f;
     float gravitateTime = 0;
-    float maxGravitateTime = 10f;
+    float maxGravitateTime = 5f;
     float gravityBoostRate = 5f;
+    bool fadingOut = false;
 
     public static MapTransition current;
     public PlayerSaveInfo betweenMapInfo;
     GameObject player;
+    
     void Start()
     {
         if (current == null)
@@ -56,9 +55,11 @@ public class MapTransition : MonoBehaviour
                 transform.localScale -= new Vector3(fullScale, fullScale)*Time.deltaTime/MapManager.current.fadeOutTime;
                 
             }
-            else if(dist < innerDist || gravitateTime > maxGravitateTime)
+            else if((dist < innerDist || gravitateTime > maxGravitateTime) && fadingOut == false)
             {
-                MapManager.current.StartFadeOut();
+                fadingOut = true;
+                LightTransition.current.StartFadeOut(MapManager.current.fadeOutTime);
+                MapManager.current.nextLevelFadeOut = true;
             }
             return;
         }

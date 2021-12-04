@@ -83,9 +83,10 @@ public class AllPointManager : MonoBehaviour
                 }
                 points.Add(currChild.GetSiblingIndex(), i);
                 pointObjs.Add(currChild.gameObject);
-            }
+            } 
         }
     }
+
 
     void GetVertexInfo()
     {
@@ -131,7 +132,7 @@ public class AllPointManager : MonoBehaviour
         }
     }
 
-    public void DamageAnimation(Vector3 damageMove, float damageRotate, float damageTime, int damagePoints)
+    public void DamageAnimation(Vector3 damageMove, float damageRotate, float damageTime, int damagePoints, float transformCorrupt = 1/20f)
     {
         //moves and rotates the points slightly to signal damage, can also change the tint of the sprite
         if(damagePoints > points.Count)
@@ -180,7 +181,7 @@ public class AllPointManager : MonoBehaviour
             trueRotate *= CompareRotateAwayDirection(pointRotation, angleToPoint);
 
 
-            point.GetComponent<PointHandling>().BecomeDamaged(trueMove, trueRotate, damageTime);
+            point.GetComponent<PointHandling>().BecomeDamaged(trueMove, trueRotate, damageTime, transformCorrupt);
         }
     }
     //This function returns the direction a1 should rotate in order to rotate further away form a2;
@@ -204,11 +205,8 @@ public class AllPointManager : MonoBehaviour
         return rotationDirection;
     }
 
-    public void BreakBullet()
+    public void BreakBullet(float destroyVelocity = 0.5f, float rotationRate = 30f, float destroyTime = 2f)
     {
-        float destroyVelocity = 0.5f;
-        float rotationRate = 30f;
-        float destroyTime = 2f;
         
         PolygonCollider2D[] pCols = gameObject.GetComponents<PolygonCollider2D>();
         for (int i = 0; i < pCols.Length; i++)
@@ -290,5 +288,18 @@ public class AllPointManager : MonoBehaviour
             return Color.white;
         }
         return sr.color;
+    }
+
+    public void SetToUiLayer()
+    {
+        foreach (GameObject point in pointObjs)
+        {
+            point.GetComponent<SpriteRenderer>().sortingLayerName = "UI-Point";
+        }
+
+        foreach (GameObject vertex in vertexObjs)
+        {
+            vertex.GetComponent<SpriteRenderer>().sortingLayerName = "UI-Vertex";
+        }
     }
 }

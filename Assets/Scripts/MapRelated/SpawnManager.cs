@@ -40,8 +40,12 @@ public class SpawnManager : MonoBehaviour
             if (spawnWait <= 0)
             {
                 isWaiting = false;
-                GameObject madeEnemy = Instantiate(spawnObject,transform.position,Quaternion.identity);
-                madeEnemy.transform.parent = GameObject.FindGameObjectWithTag("EnemyList").transform;
+                if(MapManager.current.spawnsAllowed == true)
+                {
+                    GameObject madeEnemy = Instantiate(spawnObject,transform.position,Quaternion.identity);
+                    madeEnemy.transform.parent = GameObject.FindGameObjectWithTag("EnemyList").transform;
+                }
+                
                 isShrinking = true;
             }
         }

@@ -115,31 +115,14 @@ public class HealthHandling : MonoBehaviour
                 } else
                 {
                     //destruction effect
-
-                    BoxCollider2D[] bCols = GetComponents<BoxCollider2D>();
-                    for (int i = 0; i < bCols.Length; i++)
-                    {
-                        bCols[i].enabled = false;
-                    }
-                    CircleCollider2D[] cCols = GetComponents<CircleCollider2D>();
-                    for (int i = 0; i < cCols.Length; i++)
-                    {
-                        cCols[i].enabled = false;
-                    }
-                    if (isPlayer)
-                    {
-                        GetComponent<PlayerShooting>().enabled = false;
-                        GetComponent<PlayerMovement>().enabled = false;
-                    } else
-                    {
-                        GetComponent<EnemyMovement>().enabled = false;
-                        GetComponent<EnemyShooting>().enabled = false;
-                        mapManager.EnemyDeath(gameObject);
-                    }
-
-                    pm.DeathAnimation(deathMove, deathRotate, deathTime);
-                    Destroy(gameObject, deathTime);
-                    this.enabled = false;
+                    Death();
+                    
+                }
+                bulletInfo.shotPen--;
+                if (bulletInfo.shotPen == 0)
+                {
+                    bulletInfo.ExplodeShot();
+                    collision.gameObject.GetComponent<AllPointManager>().BreakBullet();
                 }
                 
             } else if(bulletInfo.bulletType == BulletType.powerUp)
@@ -167,5 +150,33 @@ public class HealthHandling : MonoBehaviour
         }
     }
 
+    public void Death()
+    {
+        BoxCollider2D[] bCols = GetComponents<BoxCollider2D>();
+        for (int i = 0; i < bCols.Length; i++)
+        {
+            bCols[i].enabled = false;
+        }
+        CircleCollider2D[] cCols = GetComponents<CircleCollider2D>();
+        for (int i = 0; i < cCols.Length; i++)
+        {
+            cCols[i].enabled = false;
+        }
+        if (isPlayer)
+        {
+            GetComponent<PlayerShooting>().enabled = false;
+            GetComponent<PlayerMovement>().enabled = false;
+        }
+        else
+        {
+            GetComponent<EnemyMovement>().enabled = false;
+            GetComponent<EnemyShooting>().enabled = false;
+            mapManager.EnemyDeath(gameObject);
+        }
+
+        pm.DeathAnimation(deathMove, deathRotate, deathTime);
+        Destroy(gameObject, deathTime);
+        this.enabled = false;
+    }
    
 }

@@ -44,4 +44,14 @@ public class LightTransition : MonoBehaviour
             }
         }
     }
+
+    public void StartFadeOut(float setFadeOutTime)
+    {
+        fullBright = true;
+        globalLight.intensity = maxLight;
+
+        fadingOut = true;
+        fadeOutTime = setFadeOutTime;
+       
+    }
 }

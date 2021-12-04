@@ -16,7 +16,6 @@ public struct RunNode
     public List<int> forwardConnections;
     public int widthPos;
     public int heightPos;
-    
     public RunNode(int nodeId, Vector3 nodePos, int waves, int difficulty, float mapSize, int mapWalls, Vector3[] wallPositions, float[] wallAngles, List<int> forwardConnections, int widthPos, int heightPos)
     {
         this.nodeId = nodeId;
@@ -31,12 +30,13 @@ public struct RunNode
         this.widthPos = widthPos;
         this.heightPos = heightPos;
     }
+
 }
 public class RunRouteManager : MonoBehaviour
 {
     public GameObject baseNode;
     public GameObject wallObj;
-    public int activeNode;
+    public int activeNode = -1;
     public GameObject activeNodeObj;
     // Start is called before the first frame update
     public static RunRouteManager current;
@@ -53,7 +53,13 @@ public class RunRouteManager : MonoBehaviour
     float MAP_SIZE_POS_MOD = 5f;
     float CONNECTION_SCALE_MOD = 0.4f;
     int BASE_DIFFICULTY = 10;
-    bool movingPlayer = false;
+    public bool movingPlayer = false;
+
+    Vector3 startMovePos;
+    float travelTime;
+    float MAX_TRAVEL_TIME = 3f;
+
+    List<int> beatenNodes;
     void Start()
     {
         if (current != null)
@@ -64,6 +70,7 @@ public class RunRouteManager : MonoBehaviour
         current = this;
         runNodes = new List<RunNode>();
         nodeObjList = new List<GameObject>();
+        beatenNodes = new List<int>();
         MakeRunMap();
         DontDestroyOnLoad(this.gameObject);
     }
@@ -73,14 +80,19 @@ public class RunRouteManager : MonoBehaviour
     {
         if (movingPlayer)
         {
-            UpdateCameraPosition();
+            travelTime += Time.deltaTime;
+            player.transform.position = Vector3.Lerp(startMovePos, activeNodeObj.transform.position, travelTime / MAX_TRAVEL_TIME);
+            if(travelTime > MAX_TRAVEL_TIME)
+            {
+                GoToMap();
+            }
         }
     }
 
     void UpdateCameraPosition()
     {
-        ector3 camPos = Camera.main.transform.position;
-        Camera.main.transform.position = new Vector3(camPos.x, player.transform.position.y + TOP_NODE_POS.y, camPos.z);
+        Vector3 camPos = Camera.main.transform.position;
+        CamManager.current.camPos = new Vector3(camPos.x, player.transform.position.y - 10, camPos.z);
     }
 
     //run generation rules:
@@ -115,9 +127,9 @@ public class RunRouteManager : MonoBehaviour
                 int difficulty;
                 float mapSize;
                 int mapWalls;
-                float angleOffset;
-                Vector3[] wallPositions;
-                float[] wallAngles;
+                float angleOffset = 0;
+                Vector3[] wallPositions = { };
+                float[] wallAngles = { };
                 if (i == 0)
                 {
                     //just make 1 center node with basic map
@@ -133,13 +145,13 @@ public class RunRouteManager : MonoBehaviour
                     mapWalls = BASE_WALL_COUNT + Random.Range(0, i + 1);
                     nodePos = TOP_NODE_POS - new Vector3(0,yDistNeeded);
                     nodePos += new Vector3(mapSize/2.6f,0) * (j - avgWidth);
+                    angleOffset = MakeMapStartingAngle();
+                    wallPositions = HelperFunctions.GetEquilateralShapePointPositions(mapWalls, mapSize, angleOffset).ToArray();
+                    wallAngles = GetWallAngles(wallPositions);
                 }
 
                 difficulty = BASE_DIFFICULTY + i * 10;
-                waves = i + 2;
-                angleOffset = MakeMapStartingAngle();
-                wallPositions = HelperFunctions.GetEquilateralShapePointPositions(mapWalls, mapSize, angleOffset).ToArray();
-                wallAngles = GetWallAngles(wallPositions);
+                waves = i + 2; 
                 List<int> forwardConnections = new List<int>();
                 for (int k = runNodes.Count-1; k >= 0; k--)
                 {
@@ -170,7 +182,15 @@ public class RunRouteManager : MonoBehaviour
         foreach (RunNode rNode in runNodes)
         {
             Vector3 startPos = rNode.nodePos;
-            GameObject mapNode = makeMap(rNode.wallPositions, rNode.wallAngles);
+            bool nodeBeaten;
+            if (beatenNodes.Contains(rNode.nodeId))
+            {
+                nodeBeaten = true;
+            } else
+            {
+                nodeBeaten = false;
+            }
+            GameObject mapNode = makeMap(rNode.wallPositions, rNode.wallAngles, nodeBeaten);
             mapNode.transform.position = startPos;
             mapNode.GetComponent<NodeManager>().nodeId = rNode.nodeId;
             nodeObjList.Add(mapNode);
@@ -189,17 +209,39 @@ public class RunRouteManager : MonoBehaviour
         }
 
         //place the main character at the active node
-        player = GameObject.FindGameObjectWithTag("Player");
+        player = GetPlayer();
+        activeNodeObj = nodeObjList[activeNode];
         player.transform.position = runNodes[activeNode].nodePos;
         UpdateCameraPosition();
+
+        foreach (int node in runNodes[activeNode].forwardConnections)
+        {
+            nodeObjList[node].GetComponent<NodeManager>().selectableNode = true;
+        }
     }
 
-    GameObject makeMap(Vector3[] wallPositions, float[] wallAngles)
+    public void BeatLevel()
+    {
+        if(activeNode != -1)
+        {
+            beatenNodes.Add(activeNode);
+        }
+    }
+    GameObject GetPlayer()
+    {
+        return GameObject.FindGameObjectWithTag("Player");
+    }
+    GameObject makeMap(Vector3[] wallPositions, float[] wallAngles, bool nodeBeaten)
     {
         GameObject mapParent = Instantiate(baseNode, Vector3.zero,Quaternion.identity);
+        if (nodeBeaten)
+        {
+            return mapParent;
+        }
+
         GameObject wallContainer = mapParent.GetComponent<NodeManager>().wallContainer;
         mapParent.transform.localScale *= 1 / scaleMod;
-
+        
         for (int i = 0; i < wallPositions.Length; i++)
         {
             GameObject madeWall = Instantiate(wallObj, wallPositions[i], Quaternion.Euler(0, 0, wallAngles[i]-90f));
@@ -244,7 +286,7 @@ public class RunRouteManager : MonoBehaviour
         {
             startingAngle = 180 - startingAngle;
         }
-
+        
         return startingAngle;
     }
    
@@ -259,11 +301,21 @@ public class RunRouteManager : MonoBehaviour
 
         return wallAngles;
     }
-    public void GoToMap(int nodeID, GameObject nodeObj)
+    public void GoToMap()
+    {
+        movingPlayer = false;
+        SceneManager.LoadScene("SampleScene");
+    }
+
+    public void MoveTowardsMap(int nodeID, GameObject nodeObj)
     {
         activeNode = nodeID;
+        player.transform.rotation = Quaternion.Euler(0,0,HelperFunctions.AngleBetween(activeNodeObj.transform.position, nodeObj.transform.position) + 180);
+        startMovePos = activeNodeObj.transform.position;
         activeNodeObj = nodeObj;
-        SceneManager.LoadScene("SampleScene");
+        travelTime = 0;
+        LightTransition.current.StartFadeOut(MAX_TRAVEL_TIME);
+        movingPlayer = true;
     }
 
     public RunNode GetCurrentRunNode()

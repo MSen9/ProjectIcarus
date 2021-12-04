@@ -9,7 +9,8 @@ public class NodeManager : MonoBehaviour
     bool isClicked = false;
     public int nodeId;
     public bool selectableNode = false;
-    
+    float scaleMaxBonus = 0.05f;
+    float ZOOM_CHANGE_RATE = 1 / 10f;
     // Start is called before the first frame update
     void Start()
     {
@@ -19,27 +20,38 @@ public class NodeManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (selectableNode)
+        {
+            transform.localScale = Vector3.one * (1 + Mathf.PingPong(Time.time*ZOOM_CHANGE_RATE, scaleMaxBonus));
+        }
         
     }
 
     void OnMouseDown()
     {
-        isClicked = true;
+        if (selectableNode)
+        {
+            isClicked = true;
+        } else
+        {
+            Debug.Log("trying to select an unselectable node");
+        }
+        
     }
 
     void OnMouseUp()
     {
-        if (isClicked)
+        if (isClicked && RunRouteManager.current.movingPlayer == false)
         {
             //go to that level
             Debug.Log("Trying to go to level: " + nodeId.ToString());
             DontDestroyOnLoad(this.gameObject);
-            RunRouteManager.current.GoToMap(nodeId, gameObject);
+            RunRouteManager.current.MoveTowardsMap(nodeId, gameObject);
         }
     }
 
     private void OnMouseExit()
     {
-        isClicked = false;
+        //isClicked = false;
     }
 }

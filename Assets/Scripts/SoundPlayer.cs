@@ -28,7 +28,7 @@ public class SoundPlayer : MonoBehaviour
         GameObject madeSoundmaker = Instantiate(soundMaker);
         SoundPlayer sp = madeSoundmaker.GetComponent<SoundPlayer>();
         sp.sound = sound;
-        sp.volume = volume;
+        sp.volume = volume * Settings.current.soundEffectVolume;
     }
 
     public void PlaySoundThenDestroy(AudioClip sound, float volume = 1)
@@ -47,7 +47,7 @@ public class SoundPlayer : MonoBehaviour
             return;
         }
         //add sound effect option modifier
-        aSource.volume = volume;
+        aSource.volume = volume * Settings.current.soundEffectVolume;
         aSource.clip = sound;
         aSource.Play();
     }

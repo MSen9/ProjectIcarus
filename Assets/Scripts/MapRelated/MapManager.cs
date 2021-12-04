@@ -24,6 +24,7 @@ public class MapManager : MonoBehaviour
     RunManager rm;
     float wavesDoneGracePeriod;
     List<GameObject> livingEnemies;
+    bool waveDeath = false;
     public GameObject spawner;
     public bool mapOver;
     public GameObject currencyThing;
@@ -43,7 +44,7 @@ public class MapManager : MonoBehaviour
     public GameObject wall;
     public GameObject spawnSpot;
     RunNode currMapInfo;
-    
+    public bool spawnsAllowed = true;
     //bool debugOn = true;
     void OnEnable()
     {
@@ -91,7 +92,7 @@ public class MapManager : MonoBehaviour
         {
             if(LightTransition.current.fadedOut)
             {
-                GoToNextMap();
+                BackToRunMap();
             }
         }
 
@@ -104,10 +105,14 @@ public class MapManager : MonoBehaviour
             return;
         }
         currWaveTime -= Time.deltaTime;
-        if(currWaveTime < 0 && wavesDone == false)
+        if((waveDeath && livingEnemies.Count <= 0) || currWaveTime < 0)
         {
-            wavesDone = !NewWave();
+            if (wavesDone == false)
+            {
+                wavesDone = !NewWave();
+            }
         }
+        
 
         if (wavesDone && mapOver == false)
         {
@@ -121,11 +126,33 @@ public class MapManager : MonoBehaviour
                 }
             }
         }
+
+        if (Input.GetKey(KeyCode.F1) && mapOver == false)
+        {
+            DestroyAllEnemies();
+            wavesDone = true;
+            EndMap();
+        }
     }
 
+
+    void DestroyAllEnemies()
+    {
+        GameObject eList = GameObject.FindGameObjectWithTag("EnemyList");
+        for (int i = 0; i < eList.transform.childCount; i++)
+        {
+            GameObject currChild = eList.transform.GetChild(i).gameObject;
+            HealthHandling hh = currChild.GetComponent<HealthHandling>();
+            if(hh != null)
+            {
+                hh.Death();
+            }
+        }
+    }
     void EndMap()
     {
         //disable all bullets
+        spawnsAllowed = false;
         mapOver = true;
         GameObject bulletList = GameObject.FindGameObjectWithTag("BulletList");
         for (int i = 0; i < bulletList.transform.childCount; i++)
@@ -189,7 +216,7 @@ public class MapManager : MonoBehaviour
 
     bool NewWave()
     {
-
+        waveDeath = false;
         if(totalWaves <= currWave)
         {
             return false;
@@ -301,19 +328,17 @@ public class MapManager : MonoBehaviour
     public void EnemyDeath(GameObject enemy)
     {
         livingEnemies.Remove(enemy);
+        waveDeath = true;
     }
 
-    public void GoToNextMap()
+    public void BackToRunMap()
     {
         BetweenMapInfo.current.SaveMapInfo();
-        RunManager.current.runDifficulty += 10;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        //RunManager.current.runDifficulty += 10;
+        SceneManager.LoadScene("RunMap");
     }
 
-    public void StartFadeOut()
-    {
-        LightTransition.current.fadingOut = true;
-    }
+    
 
     void DynamicMapGen(float mapSize, int mapPoints)
     {

@@ -82,7 +82,7 @@ public class StringToVectorManager : MonoBehaviour
             } else
             {
                 stringChars.Add(emptyGameObject);
-                overallWidth += (1 + generalXOffsetBoost) * stringScale;
+                overallWidth += (0.8f + generalXOffsetBoost) * stringScale;
             }
             
         }
@@ -121,7 +121,7 @@ public class StringToVectorManager : MonoBehaviour
         vectorStrings.Add(vectorHolder);
         return vectorHolder;
     }
-    public void StringExplode(GameObject vectorHolder, float destroyTime)
+    public void StringExplode(GameObject vectorHolder, float destroyTime, float baseDestroyMove = 0.5f, float destroyRotate = 30f)
     {
         vectorStrings.Remove(vectorHolder);
         for (int i = 0; i < vectorHolder.transform.childCount; i++)
@@ -131,7 +131,7 @@ public class StringToVectorManager : MonoBehaviour
             if(apm != null)
             {
                 Destroy(vectorHolder, destroyTime);
-                apm.DeathAnimation(0.5f * currLetter.transform.localScale.x, 30f, destroyTime);
+                apm.DeathAnimation(baseDestroyMove * currLetter.transform.localScale.x, destroyRotate, destroyTime);
             }
             
         }

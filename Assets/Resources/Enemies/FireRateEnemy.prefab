@@ -94,6 +94,7 @@ MonoBehaviour:
   firstWaveLoad: 0
   extendTime: 1
   doneExtending: 0
+  unitsPerScale: 0
 --- !u!114 &7463005654653016277
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115,6 +116,8 @@ MonoBehaviour:
   damagePoints: 2
   deathMove: 0.5
   deathRotate: 60
+  damageSound: {fileID: 0}
+  damageVolume: 0.5
 --- !u!50 &1777278222
 Rigidbody2D:
   serializedVersion: 4
@@ -252,7 +255,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df573cf6643ae044486651eefa6b1bbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bullet: {fileID: 8142265862236874421, guid: 88b4cbbdc17d736478fa48114dd8c81b, type: 3}
+  bullet: {fileID: 5600360271719784260, guid: cc1613c2569843246a783403c51a5237, type: 3}
   reloadTime: 0.5
   canShoot: 0
   shootDistOffset: 0.5

@@ -31,7 +31,7 @@ public class MusicPlayer : MonoBehaviour
     public void PlaySong(AudioClip ac, float volume = 1)
     {
         aSource.clip = ac;
-        aSource.volume = volume;
+        aSource.volume = volume * Settings.current.musicVolume;
         aSource.Play();
     }
 }

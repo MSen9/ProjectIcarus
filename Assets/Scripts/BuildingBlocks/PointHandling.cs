@@ -85,7 +85,7 @@ public class PointHandling : MonoBehaviour
     }
 
     
-    public void BecomeDamaged(Vector3 move,float rotateZ, float damageTime)
+    public void BecomeDamaged(Vector3 move,float rotateZ, float damageTime, float transformCorruptMod = 1/20f)
     {
         
         if (damaged)
@@ -119,7 +119,6 @@ public class PointHandling : MonoBehaviour
                 vh.fixVertexPositions = false;
             }
         }
-        float transformCorruptMod = 1 / 20f;
         basePos += transformCorruptMod * move;
         baseRotate += transformCorruptMod * rotateZ;
     }

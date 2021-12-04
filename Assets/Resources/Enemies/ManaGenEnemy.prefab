@@ -72,9 +72,16 @@ MonoBehaviour:
   - {fileID: 4464253289669964367}
   - {fileID: 4649214992072001927}
   - {fileID: 3562301221837601994}
+  vertexObjs: []
+  vHandlers: []
   startFullyGrown: 0
   pointScale: 0.8
   growNormally: 1
+  ignoreLoading: 0
+  firstWaveLoad: 0
+  extendTime: 1
+  doneExtending: 0
+  unitsPerScale: 0
 --- !u!114 &7492061215623443250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87,7 +94,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df573cf6643ae044486651eefa6b1bbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bullet: {fileID: 342716116107420710, guid: 833147d87bb93ef48aec89936cc1c2c8, type: 3}
+  bullet: {fileID: 9015033726456906721, guid: 5f3d187243004ba4c98cc1fae8e3d914, type: 3}
   reloadTime: 1
   canShoot: 0
   shootDistOffset: 1.2
@@ -112,6 +119,8 @@ MonoBehaviour:
   damagePoints: 2
   deathMove: 0.5
   deathRotate: 60
+  damageSound: {fileID: 0}
+  damageVolume: 0.5
 --- !u!114 &8182444428350726714
 MonoBehaviour:
   m_ObjectHideFlags: 0

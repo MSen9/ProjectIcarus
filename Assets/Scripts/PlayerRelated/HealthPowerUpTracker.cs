@@ -8,6 +8,10 @@ public enum trackedTypes
     fireRate,
     shotSize,
     manaGen,
+    shotPen,
+    shotSpread,
+    shotExplode,
+    shotSplit,
     trackedTypeCount
 }
 public class HealthPowerUpTracker : MonoBehaviour
@@ -20,13 +24,13 @@ public class HealthPowerUpTracker : MonoBehaviour
     PlayerShooting ps;
     HealthHandling hh;
     bool listsSetUp = false;
-    public GameObject[] objTypes = new GameObject[4];
+    public GameObject[] objTypes = new GameObject[8];
 
-    public GameObject[] groups = new GameObject[4];
+    public GameObject[] groups = new GameObject[8];
 
-    public float[] scales = new float[4];
+    public float[] scales = new float[8];
 
-    int[] counts = { 0, 0, 0, 0 };
+    int[] counts = { 0, 0, 0, 0, 0, 0, 0, 0};
 
     float destroyTime = 2f;
     float destroyVel = 1f;
@@ -104,5 +108,6 @@ public class HealthPowerUpTracker : MonoBehaviour
         {
             bCols[i].enabled = false;
         }
+        madeObj.GetComponent<AllPointManager>().SetToUiLayer();
     }
 }
