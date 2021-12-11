@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 3
   m_LightVolumeOpacity: 0
-  m_ApplyToSortingLayers: 7d561cc70000000057b2bcaf912127a7
+  m_ApplyToSortingLayers: 7d561cc70000000057b2bcaf912127a75774c82117d34c3b73141a21
   m_LightCookieSprite: {fileID: 0}
   m_UseNormalMap: 0
   m_LightOrder: 0
@@ -85,3 +85,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daadc646376f0e4469ea0dc7001be1e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxLight: 3
+  fadeInTime: 3
+  fadeOutTime: 3
+  fullBright: 0
+  fadingOut: 0
+  fadedOut: 0

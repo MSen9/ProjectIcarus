@@ -20,6 +20,8 @@ public class PlayerShooting : MonoBehaviour
     float BASE_FIRERATE = 1;
 
     public GameObject sliderObj;
+    public GameObject manaBar;
+    VertexHandling manaVertex;
     AllPointManager apm;
     bool properColor = true;
     public Color powerUpCol;
@@ -47,7 +49,7 @@ public class PlayerShooting : MonoBehaviour
     public int shotExplodeBuffs = 0;
     public int shotSplitBuffs = 0;
 
-    int BASE_SHOT_PEN = 2;
+    int BASE_SHOT_PEN = 3;
     float shotScale = 1;
     float reloadSpeed = 1f;
     float nextShotTime = 0;
@@ -63,38 +65,17 @@ public class PlayerShooting : MonoBehaviour
         if(BetweenMapInfo.current != null && BetweenMapInfo.current.hasInfoSaved)
         {
             PlayerSaveInfo currInfo = BetweenMapInfo.current.savedInfo;
-            for (int i = 0; i < currInfo.fireRatePowerUps; i++)
-            {
-                HelperFunctions.GainPowerUp(PowerUpType.fireRate);
-            }
-            for (int i = 0; i < currInfo.manaGenPowerUps; i++)
-            {
-                HelperFunctions.GainPowerUp(PowerUpType.manaGen);
-            }
-            for (int i = 0; i < currInfo.shotSizePowerUps; i++)
-            {
-                HelperFunctions.GainPowerUp(PowerUpType.shotSize);
-            }
-            for (int i = 0; i < currInfo.shotPenBuffs; i++)
-            {
-                HelperFunctions.GainPowerUp(PowerUpType.shotPen);
-            }
-            for (int i = 0; i < currInfo.shotSpreadBuffs; i++)
-            {
-                HelperFunctions.GainPowerUp(PowerUpType.shotSpread);
-            }
-            for (int i = 0; i < currInfo.shotExplodeBuffs; i++)
-            {
-                HelperFunctions.GainPowerUp(PowerUpType.shotExplode);
-            }
-            for (int i = 0; i < currInfo.shotSplitBuffs; i++)
-            {
-                HelperFunctions.GainPowerUp(PowerUpType.shotSplit);
-            }
+            HelperFunctions.GainPowerUp(PowerUpType.fireRate, currInfo.fireRatePowerUps);
+            HelperFunctions.GainPowerUp(PowerUpType.manaGen, currInfo.manaGenPowerUps);
+            HelperFunctions.GainPowerUp(PowerUpType.shotSize, currInfo.shotSizePowerUps);
+            HelperFunctions.GainPowerUp(PowerUpType.shotPen, currInfo.shotPenBuffs);
+            HelperFunctions.GainPowerUp(PowerUpType.shotSpread, currInfo.shotSpreadBuffs);
+            HelperFunctions.GainPowerUp(PowerUpType.shotExplode, currInfo.shotExplodeBuffs);
+            HelperFunctions.GainPowerUp(PowerUpType.shotSplit, currInfo.shotSplitBuffs);
         }
-        if(sliderObj != null)
+        if(manaBar != null)
         {
-            slider = sliderObj.GetComponent<Slider>();
+            SetUpManaBar();
         }
         
         UpdateBuffs();
@@ -104,6 +85,12 @@ public class PlayerShooting : MonoBehaviour
         sPlayer = GetComponent<SoundPlayer>();
     }
 
+    void SetUpManaBar()
+    {
+        manaVertex = manaBar.GetComponent<AllPointManager>().vertexObjs[0].GetComponent<VertexHandling>();
+        GameObject endPoint = manaBar.GetComponent<AllPointManager>().pointObjs[1];
+        endPoint.transform.localScale = new Vector3( endPoint.transform.localScale.x,1,1);
+    }
     // Update is called once per frame
     void Update()
     {
@@ -162,9 +149,9 @@ public class PlayerShooting : MonoBehaviour
         //update the slider
         manaValue = Mathf.Clamp(manaValue,0,100);
         //float oldVal = slider.value;
-        if(slider != null)
+        if (manaBar != null)
         {
-            slider.value = GetManaRatio();
+            manaVertex.SetVertexLength(GetManaRatio()*100);
         }
         
     }
@@ -202,7 +189,7 @@ public class PlayerShooting : MonoBehaviour
             float offsetShift = leftmostOffset / (shotSpreadBuffs * 2);
             for (int i = 0; i < shotsFired; i++)
             {
-                bulletList[i] = CreateBullet(aimOffset+leftmostOffset - offsetShift*i);
+                bulletList[i] = CreateBullet(aimOffset+(leftmostOffset/2) - offsetShift*i);
             }
         }
         

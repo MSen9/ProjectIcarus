@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+[System.Serializable]
 public struct PlayerSaveInfo
 {
     public int fireRatePowerUps;
@@ -41,11 +43,19 @@ public class BetweenMapInfo : MonoBehaviour
         {
             Destroy(this.gameObject);
             return;
+        } 
+        if (SaveAndLoad.current.loadingRun)
+        {
+            //load from saved player stats
+            savedInfo = SaveAndLoad.current.runSInfo.psInfo;
+            hasInfoSaved = true;
         } else
         {
             //Set default values
-            savedInfo = new PlayerSaveInfo(0, 0, 0, 0, 0,0,0,3, 0);
+            savedInfo = new PlayerSaveInfo(0, 0, 0, 0, 0, 0, 0, 3, 0);
         }
+            
+        
         current = this;
         DontDestroyOnLoad(gameObject);
         player = GameObject.FindGameObjectWithTag("Player");

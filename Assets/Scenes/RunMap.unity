@@ -243,8 +243,21 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1873028518283655191, guid: 8fb2e75db2ff1d74ab2c812863b538eb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7107763548113879702, guid: 8fb2e75db2ff1d74ab2c812863b538eb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8fb2e75db2ff1d74ab2c812863b538eb, type: 3}
+--- !u!1 &679165801 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 831321456633877456, guid: 8fb2e75db2ff1d74ab2c812863b538eb, type: 3}
+  m_PrefabInstance: {fileID: 679165800}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1064022678
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -309,6 +322,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2133789264, guid: 2b9f71b8890e0d142965084a88ad831d, type: 3}
+      propertyPath: currencyPos
+      value: 
+      objectReference: {fileID: 679165801}
     - target: {fileID: 2911815808496680929, guid: 2b9f71b8890e0d142965084a88ad831d, type: 3}
       propertyPath: m_Name
       value: MainChara
@@ -393,8 +410,11 @@ MonoBehaviour:
   wallObj: {fileID: 6899008276218162940, guid: 950044584838ca44f8610b33b3b82b5b, type: 3}
   activeNode: 0
   activeNodeObj: {fileID: 0}
+  runNodes: []
   scaleMod: 0.15
   movingPlayer: 0
+  firstOpen: 1
+  beatenNodes: 
 --- !u!114 &1603283834
 MonoBehaviour:
   m_ObjectHideFlags: 0

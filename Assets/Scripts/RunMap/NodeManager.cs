@@ -44,7 +44,7 @@ public class NodeManager : MonoBehaviour
         if (isClicked && RunRouteManager.current.movingPlayer == false)
         {
             //go to that level
-            Debug.Log("Trying to go to level: " + nodeId.ToString());
+            Debug.Log("Trying to go to level: " + nodeId.ToString() + ". Height is: " + RunRouteManager.current.runNodes[nodeId].heightPos.ToString());
             DontDestroyOnLoad(this.gameObject);
             RunRouteManager.current.MoveTowardsMap(nodeId, gameObject);
         }

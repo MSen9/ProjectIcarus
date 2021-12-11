@@ -19,6 +19,7 @@ TagManager:
   - SVectorHolder
   - WallContainer
   - MapTransition
+  - SettingsMenu
   layers:
   - Default
   - TransparentFX

@@ -53,39 +53,43 @@ public static class HelperFunctions
         healthPupTracker.MakeUIObj(trackedTypes.health);
     }
 
-    static public void GainPowerUp(PowerUpType pType)
+    static public void GainPowerUp(PowerUpType pType, int pupCount = 1)
     {
+        if(pupCount == 0)
+        {
+            return;
+        }
         HealthPowerUpTracker healthPupTracker = GameObject.FindGameObjectWithTag("Canvas").GetComponent<HealthPowerUpTracker>();
         PlayerShooting pShooting = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerShooting>();
         switch (pType)
         {
             case PowerUpType.fireRate:
-                healthPupTracker.MakeUIObj(trackedTypes.fireRate);
-                pShooting.fireRateBuffs++;
+                healthPupTracker.MakeUIObj(trackedTypes.fireRate, pupCount);
+                pShooting.fireRateBuffs += pupCount;
                 break;
             case PowerUpType.shotSize:
-                healthPupTracker.MakeUIObj(trackedTypes.shotSize);
-                pShooting.shotSizeBuffs++;
+                healthPupTracker.MakeUIObj(trackedTypes.shotSize, pupCount);
+                pShooting.shotSizeBuffs += pupCount;
                 break;
             case PowerUpType.manaGen:
-                healthPupTracker.MakeUIObj(trackedTypes.manaGen);
-                pShooting.manaGenBuffs++;
+                healthPupTracker.MakeUIObj(trackedTypes.manaGen, pupCount);
+                pShooting.manaGenBuffs += pupCount;
                 break;
             case PowerUpType.shotPen:
-                healthPupTracker.MakeUIObj(trackedTypes.shotPen);
-                pShooting.shotPenBuffs++;
+                healthPupTracker.MakeUIObj(trackedTypes.shotPen, pupCount);
+                pShooting.shotPenBuffs += pupCount;
                 break;
             case PowerUpType.shotSpread:
-                healthPupTracker.MakeUIObj(trackedTypes.shotSpread);
-                pShooting.shotSpreadBuffs++;
+                healthPupTracker.MakeUIObj(trackedTypes.shotSpread, pupCount);
+                pShooting.shotSpreadBuffs += pupCount;
                 break;
             case PowerUpType.shotExplode:
-                healthPupTracker.MakeUIObj(trackedTypes.shotExplode);
-                pShooting.shotExplodeBuffs++;
+                healthPupTracker.MakeUIObj(trackedTypes.shotExplode, pupCount);
+                pShooting.shotExplodeBuffs += pupCount;
                 break;
             case PowerUpType.shotSplit:
-                healthPupTracker.MakeUIObj(trackedTypes.shotSplit);
-                pShooting.shotSplitBuffs++;
+                healthPupTracker.MakeUIObj(trackedTypes.shotSplit, pupCount);
+                pShooting.shotSplitBuffs += pupCount;
                 break;
             default:
                 Debug.LogError("Error: No powerup type on powerUp");

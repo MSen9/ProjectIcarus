@@ -98,6 +98,9 @@ MonoBehaviour:
   pType2: 0
   cost: 0
   textYGap: 2.2
+  repeater: 1
+  repeatScaling: 1.5
+  canRepeatPurchase: 1
   itemDescription: +1 Health
 --- !u!58 &2664252029739901832
 CircleCollider2D:

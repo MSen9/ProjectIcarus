@@ -25,6 +25,7 @@ public enum BuyEffects
     none,
     gainHp,
     gainPowerUp,
+    gainRandomBasicPowerUp,
     losePowerUp
 }
 public class ShopManager : MonoBehaviour
@@ -40,7 +41,7 @@ public class ShopManager : MonoBehaviour
     float maxMoveTime = 2;
     bool yEndReached = false;
     // Start is called before the first frame update
-    float shopItems = 5;
+    float shopItems = 9;
     void Start()
     {
         current = this;
@@ -51,6 +52,8 @@ public class ShopManager : MonoBehaviour
         possibleItems.Add(new ShopItemInfo("BasicFireRatePUP", -10, 5));
         possibleItems.Add(new ShopItemInfo("BasicPowerGenPUP", -10, 5));
         possibleItems.Add(new ShopItemInfo("BasicShotSizePUP", -10, 5));
+        possibleItems.Add(new ShopItemInfo("BasicShotPenPUP", -10, 5));
+        possibleItems.Add(new ShopItemInfo("RandomBasicPUP", -15, 5));
         //make the shop items
         MakeShopItems();
         startPos = transform.position;
@@ -70,10 +73,18 @@ public class ShopManager : MonoBehaviour
 
         SpawnShopItem(possibleItems[0], transform.position);
         float spawnXOffset = 0;
+        float spawnYOffset = 0;
         float spawnXOffsetChange = 6;
+        float spawnYOffsetChange = -4;
+        int newRowCount = 5;
         for (int i = 1; i < shopItems; i++)
         {
-            if(i%2 == 1)
+            if (i == newRowCount)
+            {
+                spawnYOffset += spawnYOffsetChange;
+                spawnXOffset = spawnXOffsetChange / 2f;
+            }
+            else if(i%2 == 1)
             {
                 spawnXOffset *= -1;
                 spawnXOffset += spawnXOffsetChange;
@@ -81,8 +92,9 @@ public class ShopManager : MonoBehaviour
             {
                 spawnXOffset *= -1;
             }
+            
             int itemSpawnIndex = UnityEngine.Random.Range(0, spawnNormallyList.Count);
-            SpawnShopItem(spawnNormallyList[itemSpawnIndex], transform.position + new Vector3(spawnXOffset, 0));
+            SpawnShopItem(spawnNormallyList[itemSpawnIndex], transform.position + new Vector3(spawnXOffset, spawnYOffset));
             
 
         }
@@ -100,6 +112,7 @@ public class ShopManager : MonoBehaviour
         GameObject madeItem = Instantiate(spawnItem, spawnPos, Quaternion.identity);
         ShopItem sItem = madeItem.GetComponent<ShopItem>();
         sItem.cost = sio.cost + UnityEngine.Random.Range(-1 * sio.costVariance, sio.costVariance+1);
+        sItem.sio = sio;
         madeItem.transform.parent = this.transform;
         return madeItem;
     }

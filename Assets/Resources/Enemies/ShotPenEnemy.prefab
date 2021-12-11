@@ -120,8 +120,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bullet: {fileID: 7737110582187241563, guid: bf4ad52386f04634c8bbe2a37df60d7e, type: 3}
   reloadTime: 1
+  fireType: 0
   canShoot: 0
   shootDistOffset: 0.3
+  scaleMod: 1
+  speedMod: 1.5
 --- !u!114 &6955618305606576802
 MonoBehaviour:
   m_ObjectHideFlags: 0

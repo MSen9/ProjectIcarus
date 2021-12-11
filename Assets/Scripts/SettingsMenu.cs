@@ -11,8 +11,8 @@ public class SettingsMenu : MonoBehaviour
     GameObject musicVolText;
     void Start()
     {
-        soundVolText = StringToVectorManager.current.StringToVectors("Sound Volume: " + (Settings.current.musicVolume * 50).ToString() + "%");
-        soundVolText = StringToVectorManager.current.StringToVectors("Music Volume: " + (Settings.current.musicVolume * 50).ToString() + "%");
+        UpdateSoundText();
+        UpdateMusicText();
     }
 
     // Update is called once per frame
@@ -21,13 +21,25 @@ public class SettingsMenu : MonoBehaviour
         
     }
 
-    void UpdateSoundVolText()
+    public void UpdateSoundText()
     {
-
+        if(soundVolText != null)
+        {
+            StringToVectorManager.current.DestroyString(soundVolText);
+        }
+        soundVolText = StringToVectorManager.current.StringToVectors("Sound Volume: " + Mathf.RoundToInt(Settings.current.soundEffectVolume * 50).ToString() + "%");
+        soundVolText.transform.position = soundVolTextSpot.transform.position;
+        soundVolText.transform.parent = soundVolText.transform;
     }
 
-    void UpdateMusicVolText()
+    public void UpdateMusicText()
     {
-
+        if (musicVolText != null)
+        {
+            StringToVectorManager.current.DestroyString(musicVolText);
+        }
+        musicVolText = StringToVectorManager.current.StringToVectors("Music Volume: " + Mathf.RoundToInt(Settings.current.musicVolume * 50).ToString() + "%");
+        musicVolText.transform.position = musicVolTextSpot.transform.position;
+        musicVolText.transform.parent = musicVolText.transform;
     }
 }

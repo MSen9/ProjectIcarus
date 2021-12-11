@@ -235,7 +235,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         */
-        private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         //Debug.Log("Main bullet has hit trigger");
         if (collision.tag == "ShopItem") {
@@ -251,6 +251,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
+        if (collision.tag == "ShopItem")
+        {
+            ShopItem si = collision.gameObject.GetComponent<ShopItem>();
+            if (si.repeater)
+            {
+                si.canRepeatPurchase = true;
+            }
+        }
         if (collision.tag == "ShopItemDesc")
         {
             if(currShopDescSource == collision)

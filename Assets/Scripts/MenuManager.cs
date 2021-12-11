@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class MenuManager : MonoBehaviour
 {
     bool menuTransition = false;
-    bool startNewMap = false;
+    bool startNewGame = false;
     bool settingsOpen = false;
     bool creditsOpen = false;
     public static MenuManager current;
@@ -18,6 +18,10 @@ public class MenuManager : MonoBehaviour
     void Start()
     {
         current = this;
+        if (SaveAndLoad.current.hasRunSaveInfo)
+        {
+            menuButtons[1].GetComponent<Button>().selectableButton = true;
+        }
     }
 
     // Update is called once per frame
@@ -26,6 +30,7 @@ public class MenuManager : MonoBehaviour
         if (LightTransition.current.fadedOut)
         {
             SceneManager.LoadScene("RunMap");
+            
         }
     }
 
@@ -37,5 +42,19 @@ public class MenuManager : MonoBehaviour
         }
         title.GetComponent<TitleMesser>().TitleExplode();
         subTitle.GetComponent<TitleMesser>().TitleExplode();
+    }
+    public void TransitionToNewGame()
+    {
+        LightTransition.current.StartFadeOut(2f);
+        MassMenuExplode();
+        startNewGame = true;
+        SaveAndLoad.current.loadingRun = false;
+    }
+    public void TransitionToLoadGame()
+    {
+        LightTransition.current.StartFadeOut(2f);
+        MassMenuExplode();
+        startNewGame = false;
+        SaveAndLoad.current.loadingRun = true;
     }
 }

@@ -12,7 +12,12 @@ public class ShopItem : MonoBehaviour
     public PowerUpType pType2 = PowerUpType.none;
     public int cost = 0;
     public float textYGap = 5.2f;
+    bool canBuy = true;
+    public bool repeater = false;
+    public float repeatScaling = 1.5f;
+    public bool canRepeatPurchase = true;
     GameObject priceVectorText;
+    public ShopItemInfo sio;
     
 
     public string itemDescription;
@@ -29,18 +34,18 @@ public class ShopItem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
-    public void PurchaseItem()
+    public bool PurchaseItem()
     {
-        if(CurrencyManager.current.currency < cost)
+        if (CurrencyManager.current.currency < cost || canBuy == false || (repeater && canRepeatPurchase == false))
         {
-            return;
+            return false;
         }
-
-        CurrencyManager.current.currency -= cost;
+        
         ShopEffect();
+        CurrencyManager.current.currency -= cost;
         float destroyTime = 2;
         for (int i = 0; i < gameObject.transform.childCount; i++)
         {
@@ -58,7 +63,16 @@ public class ShopItem : MonoBehaviour
             }
             
         }
+        if (repeater)
+        {
+            GameObject repeatedItem = ShopManager.current.SpawnShopItem(sio,transform.position);
+            ShopItem si = repeatedItem.GetComponent<ShopItem>();
+            si.cost = Mathf.FloorToInt(cost * repeatScaling);
+            si.canRepeatPurchase = false;
+        }
         Destroy(gameObject, destroyTime);
+        canBuy = false;
+        return true;
     }
     public void ShopEffect()
     {
@@ -69,6 +83,11 @@ public class ShopItem : MonoBehaviour
                 break;
             case BuyEffects.gainPowerUp:
                 ShopManager.current.GainPowerUp(pType1);
+                break;
+
+            case BuyEffects.gainRandomBasicPowerUp:
+                PowerUpType randomPType = (PowerUpType)UnityEngine.Random.Range(1, 5);
+                ShopManager.current.GainPowerUp(randomPType);
                 break;
             case BuyEffects.losePowerUp:
                 ShopManager.current.LosePowerUp(pType1);

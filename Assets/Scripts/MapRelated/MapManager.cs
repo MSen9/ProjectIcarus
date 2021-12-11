@@ -40,11 +40,15 @@ public class MapManager : MonoBehaviour
 
     public GameObject levelTransition;
     GameObject player;
+    
 
     public GameObject wall;
     public GameObject spawnSpot;
     RunNode currMapInfo;
     public bool spawnsAllowed = true;
+    float allowedSpawnOffset;
+    public GameObject waveTextSpot;
+    GameObject waveText;
     //bool debugOn = true;
     void OnEnable()
     {
@@ -53,11 +57,10 @@ public class MapManager : MonoBehaviour
         doneLoading = false;
         goingToNextLevel = false;
         nextLevelFadeOut = false;
-        currWave = 0;
         currMapInfo = RunRouteManager.current.GetCurrentRunNode();
         spawnLocations = new List<Transform>();
         ExtractMap();
-        
+        allowedSpawnOffset = currMapInfo.mapSize * 0.1f;
 
         //hardcoded values for now
         currWave = 0;
@@ -246,7 +249,7 @@ public class MapManager : MonoBehaviour
             Debug.LogError("No valid enemy file for " + ePath);
             return;
         }
-        Vector3 spawnOffset = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1));
+        Vector3 spawnOffset = new Vector3(Random.Range(-1*allowedSpawnOffset, allowedSpawnOffset), Random.Range(-1* allowedSpawnOffset, allowedSpawnOffset));
         GameObject madeSpawner = Instantiate(spawner, spawnLocation.transform.position + spawnOffset, Quaternion.identity);
         SpawnManager sm = madeSpawner.GetComponent<SpawnManager>();
         sm.spawnObject = spawnEnemy;
@@ -268,7 +271,7 @@ public class MapManager : MonoBehaviour
         
         foreach(EnemyInfo eInfo in rm.enemies)
         {
-            if(eInfo.difficulty < overallDifficulty && eInfo.spawnNormally)
+            if(eInfo.difficulty < overallDifficulty && eInfo.spawnNormally && eInfo.minMapSpawn <= currMapInfo.heightPos && currMapInfo.heightPos <= eInfo.maxMapSpawn)
             {
                 canSpawn.Add(eInfo);
             }
@@ -317,9 +320,22 @@ public class MapManager : MonoBehaviour
         {
             waveTime = 0f;
         }
+        UpdateWaveText();
+
         return new WaveInfo(waveTime, enemyGroups);
     }
     
+    void UpdateWaveText()
+    {
+
+        if(waveText != null)
+        {
+            StringToVectorManager.current.DestroyString(waveText);
+        }
+        waveText = StringToVectorManager.current.StringToVectors("Wave:" + currWave.ToString() + "/" + totalWaves.ToString(), 1, StringAlignment.right);
+        waveText.transform.position = waveTextSpot.transform.position;
+        waveText.transform.parent = waveTextSpot.transform;
+    }
     public void EnemySpawn(GameObject enemy)
     {
         livingEnemies.Add(enemy);

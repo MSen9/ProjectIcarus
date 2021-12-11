@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 3402076975877461803}
   - component: {fileID: 6504030424412930269}
   - component: {fileID: 4198843108661340819}
+  - component: {fileID: 2133789264}
   m_Layer: 0
   m_Name: MainChara
   m_TagString: Player
@@ -169,6 +170,10 @@ MonoBehaviour:
   fireRateBuffs: 0
   shotSizeBuffs: 0
   manaGenBuffs: 0
+  shotPenBuffs: 0
+  shotSpreadBuffs: 0
+  shotExplodeBuffs: 0
+  shotSplitBuffs: 0
   bullet: {fileID: 4721003936083125470, guid: 6b70bdc0c4e415340b402c692de8f54a, type: 3}
 --- !u!114 &2911815808496680928
 MonoBehaviour:
@@ -385,6 +390,21 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &2133789264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2911815808496680929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab536de97e0241e448f2c2b513069484, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currency: 0
+  currencyPos: {fileID: 0}
+  currencySymbol: {fileID: 6683859300152242725, guid: 0811cf9219256cf41834917db2ebf373, type: 3}
 --- !u!1001 &394574461501411773
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -463,7 +483,7 @@ PrefabInstance:
     - target: {fileID: 3620398852086144717, guid: c1b96ecfa0bb7dc448e2a9e1edd1423d, type: 3}
       propertyPath: endPoint
       value: 
-      objectReference: {fileID: 449775656221985896}
+      objectReference: {fileID: 3111137414756550738}
     - target: {fileID: 3620398852086144717, guid: c1b96ecfa0bb7dc448e2a9e1edd1423d, type: 3}
       propertyPath: autoGetEndPoint
       value: 0

@@ -1,8 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
+[System.Serializable]
 public struct RunNode
 {
     public int nodeId;
@@ -40,7 +43,7 @@ public class RunRouteManager : MonoBehaviour
     public GameObject activeNodeObj;
     // Start is called before the first frame update
     public static RunRouteManager current;
-    List<RunNode> runNodes;
+    public List<RunNode> runNodes;
     List<GameObject> nodeObjList;
     int mapDepth = 10;
     Vector3 TOP_NODE_POS = new Vector3(0, 10);
@@ -58,8 +61,8 @@ public class RunRouteManager : MonoBehaviour
     Vector3 startMovePos;
     float travelTime;
     float MAX_TRAVEL_TIME = 3f;
-
-    List<int> beatenNodes;
+    public bool firstOpen = true;
+    public List<int> beatenNodes;
     void Start()
     {
         if (current != null)
@@ -68,10 +71,24 @@ public class RunRouteManager : MonoBehaviour
             return;
         }
         current = this;
-        runNodes = new List<RunNode>();
         nodeObjList = new List<GameObject>();
-        beatenNodes = new List<int>();
-        MakeRunMap();
+        
+        if (SaveAndLoad.current.loadingRun)
+        {
+            runNodes = new List<RunNode>(SaveAndLoad.current.runSInfo.runNodes);
+            beatenNodes = new List<int>(SaveAndLoad.current.runSInfo.beatenNodes);
+            activeNode = SaveAndLoad.current.runSInfo.activeNode;
+            BuildRunMap();
+        }
+        else
+        {
+            beatenNodes = new List<int>();
+            runNodes = new List<RunNode>();
+            MakeRunMap();
+        }
+
+
+
         DontDestroyOnLoad(this.gameObject);
     }
 
@@ -103,13 +120,16 @@ public class RunRouteManager : MonoBehaviour
     {
         int nodeIdCount = 0;
         float yDistNeeded = 0;
+        int mapWidth = 1; 
         for (int i = 0; i < mapDepth; i++)
         {
             yDistNeeded += (BASE_MAP_SIZE + MAX_SIZE_BOOST * i) * scaleMod*1.5f;
         }
         for (int i = mapDepth-1; i >= 0; i--)
         {
-            int mapWidth = 1;
+            int prevWidth = mapWidth;
+            
+            
             if(i==0 || i == mapDepth - 1)
             {
                 mapWidth = 1;
@@ -118,7 +138,6 @@ public class RunRouteManager : MonoBehaviour
                 mapWidth = Random.Range(2, 4);
             }
             float avgWidth = (mapWidth - 1) / 2f;
-            
             for (int j = 0; j < mapWidth; j++)
             {
                 
@@ -153,16 +172,47 @@ public class RunRouteManager : MonoBehaviour
                 difficulty = BASE_DIFFICULTY + i * 10;
                 waves = i + 2; 
                 List<int> forwardConnections = new List<int>();
+                int prevNodeCount = prevWidth-1;
+                float avgConnections = mapWidth / prevWidth;
+                
+                Dictionary<int, float> nodeDistIds = new Dictionary<int, float>();
                 for (int k = runNodes.Count-1; k >= 0; k--)
                 {
                     if(i == runNodes[k].heightPos-1)
                     {
+                        float nodeDist = Vector3.Distance(nodePos, runNodes[k].nodePos);
+                        nodeDistIds.Add( runNodes[k].nodeId, nodeDist);
+
                         forwardConnections.Add(runNodes[k].nodeId);
                     } else if(i != runNodes[k].heightPos)
                     {
                         //node must be at a lower depth, exit the loop
                         break;
                     }
+                }
+                int minConnections = (prevWidth + 1) - mapWidth;
+                if(minConnections < 1)
+                {
+                    minConnections = 1;
+                }
+                if(Random.Range(0f,1f) > 0.5f)
+                {
+                    minConnections++;
+                }
+                int connectionsLeft = forwardConnections.Count;
+                foreach(KeyValuePair<int,float> nodeDist in nodeDistIds.OrderByDescending(key => key.Value))
+                {
+                    if(connectionsLeft <= minConnections)
+                    {
+                        break;
+                    }
+                    forwardConnections.Remove(nodeDist.Key);
+                    connectionsLeft--;
+                }
+
+                for (int k = 0; k < forwardConnections.Count; k++)
+                {
+
                 }
                 runNodes.Add(new RunNode(nodeIdCount, nodePos, waves,difficulty, mapSize, mapWalls, wallPositions, wallAngles,forwardConnections,j,i));
                 
@@ -176,6 +226,7 @@ public class RunRouteManager : MonoBehaviour
         BuildRunMap();
     }
 
+    
     public void BuildRunMap()
     {
         nodeObjList.Clear();

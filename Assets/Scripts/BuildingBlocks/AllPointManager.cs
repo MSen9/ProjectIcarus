@@ -32,7 +32,7 @@ public class AllPointManager : MonoBehaviour
     {
         GetPoints();
         GetVertexInfo();
-        ScalePoints();
+        //ScalePoints();
         extendTimeRemaining = extendTime;
         
         unitsPerScale = (VERT_PIXELS / (float)PIXELS_PER_UNIT) * pointScale;

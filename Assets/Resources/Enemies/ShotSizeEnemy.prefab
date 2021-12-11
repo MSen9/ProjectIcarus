@@ -112,10 +112,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df573cf6643ae044486651eefa6b1bbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bullet: {fileID: 3049339881164483787, guid: 880b4456ea94db144a6e2ab5dc7116c2, type: 3}
-  reloadTime: 2
+  bullet: {fileID: 597255955214587396, guid: 5a6602669bd02214da14dacb097d08b9, type: 3}
+  reloadTime: 1.75
+  fireType: 0
   canShoot: 0
   shootDistOffset: 0.3
+  scaleMod: 1
+  speedMod: 1
 --- !u!114 &222431879354004960
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -7,7 +7,16 @@ public class OpenMap : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        RunRouteManager.current.BeatLevel();
-        RunRouteManager.current.BuildRunMap();
+        if (RunRouteManager.current.firstOpen)
+        {
+            RunRouteManager.current.firstOpen = false;
+            
+        } else
+        {
+            RunRouteManager.current.BeatLevel();
+            RunRouteManager.current.BuildRunMap();
+            SaveAndLoad.current.SaveRunInfo();
+        }
+        
     }
 }

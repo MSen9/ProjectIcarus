@@ -116,7 +116,7 @@ public class BulletMove : MonoBehaviour
                 for (int i = 0; i < shotSplits*2; i++)
                 {
                     GameObject splitBullet = Instantiate(this.gameObject, transform.position - moveValsBack, 
-                        Quaternion.Euler(0,0,transform.rotation.eulerAngles.z - leftmostOffset-offsetShift*i));
+                        Quaternion.Euler(0,0,transform.rotation.eulerAngles.z + (leftmostOffset/2)-offsetShift*i));
                     splitBullet.transform.parent = GameObject.FindGameObjectWithTag("BulletList").transform;
                     BulletMove bm = splitBullet.GetComponent<BulletMove>();
                     //splitBullet.transform.localScale = transform.localScale;

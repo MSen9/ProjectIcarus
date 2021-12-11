@@ -255,10 +255,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df573cf6643ae044486651eefa6b1bbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bullet: {fileID: 5600360271719784260, guid: cc1613c2569843246a783403c51a5237, type: 3}
+  bullet: {fileID: 8142265862236874421, guid: 88b4cbbdc17d736478fa48114dd8c81b, type: 3}
   reloadTime: 0.5
+  fireType: 0
   canShoot: 0
   shootDistOffset: 0.5
+  scaleMod: 1
+  speedMod: 1
 --- !u!1001 &7463005654811369495
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -40,6 +40,10 @@ public class SoundPlayer : MonoBehaviour
     //responsible for playing sound effects in game, subject to sound effect options and modifiers
     public void PlaySound(AudioClip sound, float volume = 1)
     {
+        if(sound == null)
+        {
+            sound = this.sound;
+        }
         aSource = GetComponent<AudioSource>();
         if (aSource == null)
         {

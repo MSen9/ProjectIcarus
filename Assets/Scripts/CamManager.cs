@@ -78,6 +78,11 @@ public class CamManager : MonoBehaviour
         currMoveTime = 0;
         movingToDest = true;
     }
+
+    public void SetPoint(Vector3 pos)
+    {
+        camPos = pos;
+    }
     public void EndMapCam(Vector3 destination, float moveTime = 2f)
     {
         MoveToPoint(destination, moveTime = 2f);

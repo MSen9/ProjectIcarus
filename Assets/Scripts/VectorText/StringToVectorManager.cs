@@ -14,7 +14,7 @@ public class StringToVectorManager : MonoBehaviour
     public Dictionary<char,GameObject> vectorChars;
     public GameObject emptyGameObject;
     string CHAR_LIST = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ+-";
-    string[] SPEC_CHARS = new string[]{ ":colon" };
+    string[] SPEC_CHARS = new string[]{ ":colon", "%percent","?questionMark","/fSlash" };
     string VECTOR_PREFAB_DIRECTORY = "VectorLetters";
     public static StringToVectorManager current;
     float generalXOffsetBoost = 0.2f;
@@ -108,6 +108,7 @@ public class StringToVectorManager : MonoBehaviour
                 madeChar.transform.parent = vectorHolder.transform;
                 VectorCharTracker vct = madeChar.GetComponent<VectorCharTracker>();
                 xOffset += (vct.width + generalXOffsetBoost) * stringScale;
+                madeChar.GetComponent<AllPointManager>().SetToUiLayer();
                 if (textCols != null)
                 {
                     madeChar.GetComponent<AllPointManager>().SetAllColors(new Color(textCols[0], textCols[1], textCols[2]));

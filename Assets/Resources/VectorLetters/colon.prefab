@@ -60,6 +60,7 @@ MonoBehaviour:
   firstWaveLoad: 0
   extendTime: 1
   doneExtending: 1
+  unitsPerScale: 0
 --- !u!114 &9196202065541217460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -72,7 +73,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7bf25e50bff79d4fb61d85a58b9fc39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 0.4
+  width: 0.6
   height: 1.5
 --- !u!1 &3356162735221549690
 GameObject:

@@ -11,6 +11,7 @@ public enum ButtonFunctionality
     saveGame,
     settings,
     credits,
+    backToMenu,
     exitToDesktop,
     raiseSoundVolume,
     lowerSoundVolume,
@@ -21,7 +22,7 @@ public class Button : MonoBehaviour
 {
     public string buttonText;
     public float textScale = 1;
-    GameObject buttonTextObj;
+    public GameObject buttonTextObj;
     public ButtonFunctionality buttonMode;
     bool isClicked = false;
     public bool selectableButton = true;
@@ -35,23 +36,46 @@ public class Button : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        buttonTextObj = StringToVectorManager.current.StringToVectors(buttonText, textScale, StringAlignment.center);
-        buttonTextObj.transform.parent = this.transform;
-        buttonTextObj.transform.position = this.transform.position + textOffset;
+        MakeTextObj();
 
-        buttonCorners[0].transform.localPosition = new Vector3(buttonDimensions.x*-1,buttonDimensions.y,0);
+
+        ResizeButton();
+        DefineButtonDefinitions();
+
+        
+    }
+
+
+    public void ResizeButton()
+    {
+        buttonCorners[0].transform.localPosition = new Vector3(buttonDimensions.x * -1, buttonDimensions.y, 0);
         buttonCorners[1].transform.localPosition = buttonDimensions;
-        buttonCorners[2].transform.localPosition = new Vector3(buttonDimensions.x*-1, buttonDimensions.y*-1, 0);
+        buttonCorners[2].transform.localPosition = new Vector3(buttonDimensions.x * -1, buttonDimensions.y * -1, 0);
         buttonCorners[3].transform.localPosition = new Vector3(buttonDimensions.x, buttonDimensions.y * -1, 0);
         GetComponent<AllPointManager>().InstantGrowAllVertexes();
         bCol = GetComponent<BoxCollider2D>();
         bCol.size = buttonDimensions * 2;
-
-        buttonToAction = new Dictionary<ButtonFunctionality, Action>();
-        buttonToAction.Add(ButtonFunctionality.newGame, StartNewGame);
-        buttonToAction.Add(ButtonFunctionality.settings, GoToSettings);
     }
 
+    public void MakeTextObj()
+    {
+        buttonTextObj = StringToVectorManager.current.StringToVectors(buttonText, textScale, StringAlignment.center);
+        buttonTextObj.transform.parent = this.transform;
+        buttonTextObj.transform.position = this.transform.position + textOffset;
+    }
+
+    void DefineButtonDefinitions()
+    {
+        buttonToAction = new Dictionary<ButtonFunctionality, Action>();
+        buttonToAction.Add(ButtonFunctionality.newGame, StartNewGame);
+        buttonToAction.Add(ButtonFunctionality.loadGame, LoadGame);
+        buttonToAction.Add(ButtonFunctionality.settings, GoToSettings);
+        buttonToAction.Add(ButtonFunctionality.backToMenu, BackToMenu);
+        buttonToAction.Add(ButtonFunctionality.raiseSoundVolume, RaiseSoundEffectVolume);
+        buttonToAction.Add(ButtonFunctionality.lowerSoundVolume, LowerSoundEffectVolume);
+        buttonToAction.Add(ButtonFunctionality.raiseMusicVolume, RaiseMusicVolume);
+        buttonToAction.Add(ButtonFunctionality.lowerMusicVolume, LowerMusicVolume);
+    }
     // Update is called once per frame
     void Update()
     {
@@ -106,19 +130,56 @@ public class Button : MonoBehaviour
     //Button effect list
     void StartNewGame()
     {
-        LightTransition.current.StartFadeOut(2f);
-        MenuManager.current.MassMenuExplode();
+        MenuManager.current.TransitionToNewGame();
+    }
+
+    void LoadGame()
+    {
+
+        MenuManager.current.TransitionToLoadGame();
     }
 
     void GoToSettings()
     {
-        Camera.main.transform.position = new Vector3(0, -30, -10);
+        CamManager.current.SetPoint(new Vector3(0, -30, -10));
     }
 
     void BackToMenu()
     {
-        Camera.main.transform.position = new Vector3(0, 0, -10);
+        CamManager.current.SetPoint(new Vector3(0, 0, -10));
     }
 
+    void RaiseSoundEffectVolume()
+    {
+        float soundIncrement = 0.2f;
+        Settings.current.soundEffectVolume += soundIncrement;
+        Settings.current.soundEffectVolume = Mathf.Clamp(Settings.current.soundEffectVolume, 0, 2);
+        //Play a sound to show audio difference
+        transform.parent.GetComponent<SoundPlayer>().PlaySound(null, 0.5f);
+        transform.parent.GetComponent<SettingsMenu>().UpdateSoundText();
+    }
+    void LowerSoundEffectVolume()
+    {
+        float soundIncrement = 0.2f;
+        Settings.current.soundEffectVolume -= soundIncrement;
+        Settings.current.soundEffectVolume = Mathf.Clamp(Settings.current.soundEffectVolume, 0, 2);
+        //Play a sound to show audio difference
+        transform.parent.GetComponent<SoundPlayer>().PlaySound(null, 0.5f);
+        transform.parent.GetComponent<SettingsMenu>().UpdateSoundText();
+    }
 
+    void RaiseMusicVolume()
+    {
+        float soundIncrement = 0.2f;
+        Settings.current.musicVolume += soundIncrement;
+        Settings.current.musicVolume = Mathf.Clamp(Settings.current.musicVolume, 0, 2);
+        transform.parent.GetComponent<SettingsMenu>().UpdateMusicText();
+    }
+    void LowerMusicVolume()
+    {
+        float soundIncrement = 0.2f;
+        Settings.current.musicVolume -= soundIncrement;
+        Settings.current.musicVolume =  Mathf.Clamp(Settings.current.musicVolume, 0, 2);
+        transform.parent.GetComponent<SettingsMenu>().UpdateMusicText();
+    }
 }
