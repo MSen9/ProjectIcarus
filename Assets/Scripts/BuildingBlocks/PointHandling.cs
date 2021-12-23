@@ -20,20 +20,22 @@ public class PointHandling : MonoBehaviour
     float currDamageTime;
     float maxDamageTime;
     //tracks the effects of the move and rotation at the frames of movement
-    List<GameObject> vertexes;
+    public GameObject vertex;
     // Start is called before the first frame update
     void Start()
     {
-        vertexes = new List<GameObject>();
+        vertex = transform.GetChild(0).gameObject;
+        /*
         for (int i = 0; i < transform.childCount; i++)
         {
             Transform currChild = transform.GetChild(i);
             if(currChild.GetComponent<VertexHandling>() != null)
             {
-                vertexes.Add(currChild.gameObject);
+                vertex.Add(currChild.gameObject);
             }
         }
-        GetComponent<SpriteRenderer>().color = GetComponent<SpriteRenderer>().color;
+        */
+        //GetComponent<SpriteRenderer>().color = GetComponent<SpriteRenderer>().color;
     }
 
     // Update is called once per frame
@@ -70,10 +72,7 @@ public class PointHandling : MonoBehaviour
                     damageInstances = 0;
                     transform.localPosition = basePos;
                     transform.localRotation = Quaternion.Euler(0,0, baseRotate);
-                    foreach (GameObject vertex in vertexes)
-                    {
-                        vertex.GetComponent<VertexHandling>().fixVertexPositions = true;
-                    }
+                    
                 } else
                 {
                     backToNormalState = true;
@@ -112,12 +111,14 @@ public class PointHandling : MonoBehaviour
             baseRotate = transform.localRotation.eulerAngles.z;
             damageMove = move;
             damageRotation = rotateZ;
-            foreach(GameObject vertex in vertexes)
+            /*
+            foreach(GameObject vertex in vertex)
             {
                 VertexHandling vh = vertex.GetComponent<VertexHandling>();
                 //vh.RefreshLastPositions();
-                vh.fixVertexPositions = false;
+                //vh.fixVertexPositions = false;
             }
+            */
         }
         basePos += transformCorruptMod * move;
         baseRotate += transformCorruptMod * rotateZ;
@@ -129,9 +130,10 @@ public class PointHandling : MonoBehaviour
         dyingMove = move*Time.fixedDeltaTime;
         dyingRotation = rotateRate*Time.fixedDeltaTime;
         totalDeathTime = deathTime;
-        foreach(GameObject vertex in vertexes)
+        if(vertex.activeInHierarchy == true)
         {
             vertex.GetComponent<VertexHandling>().StartShrinking(deathTime);
         }
+        
     }
 }

@@ -19,7 +19,8 @@ public struct RunNode
     public List<int> forwardConnections;
     public int widthPos;
     public int heightPos;
-    public RunNode(int nodeId, Vector3 nodePos, int waves, int difficulty, float mapSize, int mapWalls, Vector3[] wallPositions, float[] wallAngles, List<int> forwardConnections, int widthPos, int heightPos)
+    public bool bossLevel;
+    public RunNode(int nodeId, Vector3 nodePos, int waves, int difficulty, float mapSize, int mapWalls, Vector3[] wallPositions, float[] wallAngles, List<int> forwardConnections, int widthPos, int heightPos, bool bossLevel)
     {
         this.nodeId = nodeId;
         this.nodePos = nodePos;
@@ -32,6 +33,7 @@ public struct RunNode
         this.forwardConnections = forwardConnections;
         this.widthPos = widthPos;
         this.heightPos = heightPos;
+        this.bossLevel = bossLevel;
     }
 
 }
@@ -51,7 +53,7 @@ public class RunRouteManager : MonoBehaviour
     float BASE_MAP_SIZE = 18;
     GameObject player;
     float MIN_SIZE_BOOST = 3f;
-    float MAX_SIZE_BOOST = 6f;
+    float MAX_SIZE_BOOST = 5f;
     public float scaleMod = 0.15f;
     float MAP_SIZE_POS_MOD = 5f;
     float CONNECTION_SCALE_MOD = 0.4f;
@@ -128,11 +130,16 @@ public class RunRouteManager : MonoBehaviour
         for (int i = mapDepth-1; i >= 0; i--)
         {
             int prevWidth = mapWidth;
-            
-            
-            if(i==0 || i == mapDepth - 1)
+
+            bool bossLevel = false;
+            if (i == mapDepth - 1)
+            {
+                bossLevel = true;
+            }
+            if (i==0 || i == mapDepth - 1)
             {
                 mapWidth = 1;
+                
             } else
             {
                 mapWidth = Random.Range(2, 4);
@@ -149,6 +156,7 @@ public class RunRouteManager : MonoBehaviour
                 float angleOffset = 0;
                 Vector3[] wallPositions = { };
                 float[] wallAngles = { };
+                
                 if (i == 0)
                 {
                     //just make 1 center node with basic map
@@ -159,8 +167,8 @@ public class RunRouteManager : MonoBehaviour
                 }
                 else
                 {
-                    
-                    mapSize = BASE_MAP_SIZE + Random.Range(MIN_SIZE_BOOST, MAX_SIZE_BOOST) * i;
+
+                    mapSize = BASE_MAP_SIZE + Random.Range(MIN_SIZE_BOOST * i, MAX_SIZE_BOOST * i);
                     mapWalls = BASE_WALL_COUNT + Random.Range(0, i + 1);
                     nodePos = TOP_NODE_POS - new Vector3(0,yDistNeeded);
                     nodePos += new Vector3(mapSize/2.6f,0) * (j - avgWidth);
@@ -170,7 +178,7 @@ public class RunRouteManager : MonoBehaviour
                 }
 
                 difficulty = BASE_DIFFICULTY + i * 10;
-                waves = i + 2; 
+                waves = i/2 + 3; 
                 List<int> forwardConnections = new List<int>();
                 int prevNodeCount = prevWidth-1;
                 float avgConnections = mapWidth / prevWidth;
@@ -214,7 +222,7 @@ public class RunRouteManager : MonoBehaviour
                 {
 
                 }
-                runNodes.Add(new RunNode(nodeIdCount, nodePos, waves,difficulty, mapSize, mapWalls, wallPositions, wallAngles,forwardConnections,j,i));
+                runNodes.Add(new RunNode(nodeIdCount, nodePos, waves,difficulty, mapSize, mapWalls, wallPositions, wallAngles,forwardConnections,j,i,bossLevel));
                 
                 nodeIdCount++;
                 
@@ -229,6 +237,7 @@ public class RunRouteManager : MonoBehaviour
     
     public void BuildRunMap()
     {
+        CamManager.current.SetScrollBounds(runNodes[0].nodePos.y);
         nodeObjList.Clear();
         foreach (RunNode rNode in runNodes)
         {
@@ -355,7 +364,7 @@ public class RunRouteManager : MonoBehaviour
     public void GoToMap()
     {
         movingPlayer = false;
-        SceneManager.LoadScene("SampleScene");
+        SceneTransition.current.GoToScene("SampleScene");
     }
 
     public void MoveTowardsMap(int nodeID, GameObject nodeObj)

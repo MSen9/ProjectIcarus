@@ -231,6 +231,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 831321455834951257, guid: 8fb2e75db2ff1d74ab2c812863b538eb, type: 3}
+      propertyPath: canScroll
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 831321455834951332, guid: 8fb2e75db2ff1d74ab2c812863b538eb, type: 3}
       propertyPath: m_Name
       value: Main Camera
@@ -244,6 +248,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1873028518283655191, guid: 8fb2e75db2ff1d74ab2c812863b538eb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2067081993309908946, guid: 8fb2e75db2ff1d74ab2c812863b538eb, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -372,6 +380,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2911815808496680931, guid: 2b9f71b8890e0d142965084a88ad831d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2911815808496680933, guid: 2b9f71b8890e0d142965084a88ad831d, type: 3}
+      propertyPath: shotExplodeBuffs
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

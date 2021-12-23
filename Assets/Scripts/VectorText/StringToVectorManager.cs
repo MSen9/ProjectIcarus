@@ -13,9 +13,10 @@ public class StringToVectorManager : MonoBehaviour
 {
     public Dictionary<char,GameObject> vectorChars;
     public GameObject emptyGameObject;
-    string CHAR_LIST = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ+-";
-    string[] SPEC_CHARS = new string[]{ ":colon", "%percent","?questionMark","/fSlash" };
+    string CHAR_LIST = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ+-!()";
+    string[] SPEC_CHARS = new string[]{ ":colon", "%percent","?questionMark","/fSlash","'apostrophe",",comma",".period" };
     string VECTOR_PREFAB_DIRECTORY = "VectorLetters";
+    string FULL_FILE_PATH = "Assets/Resources/VectorLetters";
     public static StringToVectorManager current;
     float generalXOffsetBoost = 0.2f;
     char spaceLetter = ' ';
@@ -34,26 +35,35 @@ public class StringToVectorManager : MonoBehaviour
         vectorStrings = new List<GameObject>();
         for (int i = 0; i < CHAR_LIST.Length; i++)
         {
-            GameObject currChar = Resources.Load(Path.Combine(VECTOR_PREFAB_DIRECTORY, CHAR_LIST[i].ToString())) as GameObject;
-            if(currChar != null)
+
+            string path = Path.Combine(VECTOR_PREFAB_DIRECTORY, CHAR_LIST[i].ToString());
+            try
             {
+                GameObject currChar = Resources.Load(path) as GameObject;
                 vectorChars.Add(CHAR_LIST[i], currChar);
-            } else
+            
+            } catch
             {
                 Debug.LogError("No valid prefab for: " + CHAR_LIST[i].ToString());
             }
+                
+            
+            
         }
 
         for (int i = 0; i < SPEC_CHARS.Length; i++)
         {
-            GameObject currChar = Resources.Load(Path.Combine(VECTOR_PREFAB_DIRECTORY, SPEC_CHARS[i].Substring(1,SPEC_CHARS[i].Length-1))) as GameObject;
-            if (currChar != null)
+            string path = Path.Combine(VECTOR_PREFAB_DIRECTORY, SPEC_CHARS[i].Substring(1, SPEC_CHARS[i].Length - 1));
+            
+            try
             {
+                GameObject currChar = Resources.Load(path) as GameObject;
                 vectorChars.Add(SPEC_CHARS[i][0], currChar);
+
             }
-            else
+            catch
             {
-                Debug.LogError("No valid prefab for: " + CHAR_LIST[i].ToString());
+                Debug.LogError("No valid prefab for: " + SPEC_CHARS[i][0].ToString());
             }
         }
 
@@ -62,62 +72,93 @@ public class StringToVectorManager : MonoBehaviour
     public GameObject StringToVectors(string inputString, float stringScale = 1f, 
         StringAlignment align = StringAlignment.left, float[] textCols = null)
     {
-        inputString = inputString.ToUpper();
-        float xOffset = 0;
-        float yOffset = 0;
-        float overallWidth = 0;
-        List<GameObject> stringChars = new List<GameObject>();
+        string[] lineStrings = inputString.Split(new string[] { "\n","\\n" }, System.StringSplitOptions.None);
+        for (int i = 0; i < lineStrings.Length; i++)
+        {
+            lineStrings[i] = lineStrings[i].ToUpper();
+        }
+
+        float baseYGap = 1.75f;
+
+       
+        
+        float[] overallWidths = new float[lineStrings.Length];
+        
+        List<List<GameObject>> stringChars = new List<List<GameObject>>();
         GameObject vectorHolder = Instantiate(emptyGameObject, new Vector3(0,0,0), Quaternion.identity);
 
+
+        for (int i = 0; i < lineStrings.Length; i++)
+        {
+            float lineWidth = 0;
+            stringChars.Add(new List<GameObject>());
         
-
-        for (int i = 0; i < inputString.Length; i++)
-        {
-            if(inputString[i] != spaceLetter)
+            for (int j = 0; j < lineStrings[i].Length; j++)
             {
-                GameObject matchingPrefab = vectorChars[inputString[i]];
-                VectorCharTracker vct = matchingPrefab.GetComponent<VectorCharTracker>();
-                stringChars.Add(matchingPrefab);
-                overallWidth += (vct.width + generalXOffsetBoost) * stringScale;
-            } else
-            {
-                stringChars.Add(emptyGameObject);
-                overallWidth += (0.8f + generalXOffsetBoost) * stringScale;
-            }
-            
-        }
-
-        float alignmentXOffset = 0;
-        if(align == StringAlignment.center)
-        {
-            alignmentXOffset = overallWidth / 2;
-            float trueCenterFixing = 0.6f;
-            alignmentXOffset -= trueCenterFixing;
-        } else if (align == StringAlignment.right)
-        {
-            alignmentXOffset = overallWidth;
-        }
-
-
-        for (int i = 0; i < stringChars.Count; i++)
-        {
-            if(stringChars[i] != emptyGameObject)
-            {
-                GameObject madeChar = Instantiate(stringChars[i], vectorHolder.transform.position + new Vector3(xOffset - alignmentXOffset, yOffset), Quaternion.identity);
-                madeChar.transform.localScale = new Vector3(stringScale, stringScale, 1);
-                madeChar.transform.parent = vectorHolder.transform;
-                VectorCharTracker vct = madeChar.GetComponent<VectorCharTracker>();
-                xOffset += (vct.width + generalXOffsetBoost) * stringScale;
-                madeChar.GetComponent<AllPointManager>().SetToUiLayer();
-                if (textCols != null)
+                char currLetter = lineStrings[i][j];
+                if(currLetter != spaceLetter)
                 {
-                    madeChar.GetComponent<AllPointManager>().SetAllColors(new Color(textCols[0], textCols[1], textCols[2]));
+                    if (vectorChars.ContainsKey(currLetter))
+                    {
+                        GameObject matchingPrefab = vectorChars[currLetter];
+                        VectorCharTracker vct = matchingPrefab.GetComponent<VectorCharTracker>();
+                        stringChars[i].Add(matchingPrefab);
+                        lineWidth += (vct.width + generalXOffsetBoost) * stringScale;
+                    } else
+                    {
+                        Debug.LogError("No appropriate letter for: " + currLetter);
+                    }
+                  
+                } else
+                {
+                    stringChars[i].Add(emptyGameObject);
+                    lineWidth += (0.8f + generalXOffsetBoost) * stringScale;
                 }
-            } else
-            {
-                xOffset += (1 + generalXOffsetBoost) * stringScale;
+            
+
             }
+            overallWidths[i] = lineWidth;
+        }
+
+        
+        float yOffset = 0;
+        for (int i = 0; i < lineStrings.Length; i++)
+        {
+            float xOffset = 0;
+
+            float alignmentXOffset = 0;
+            if(align == StringAlignment.center)
+            {
+                alignmentXOffset = overallWidths[i] / 2;
+                float trueCenterFixing = 0.6f;
+                alignmentXOffset -= trueCenterFixing;
+            } else if (align == StringAlignment.right)
+            {
+                alignmentXOffset = overallWidths[i];
+            }
+
+
+            for (int j = 0; j < stringChars[i].Count; j++)
+            {
+                if(stringChars[i][j] != emptyGameObject)
+                {
+                    GameObject madeChar = Instantiate(stringChars[i][j], vectorHolder.transform.position + new Vector3(xOffset - alignmentXOffset, yOffset), Quaternion.identity);
+                    madeChar.transform.localScale = new Vector3(stringScale, stringScale, 1);
+                    madeChar.transform.parent = vectorHolder.transform;
+                    VectorCharTracker vct = madeChar.GetComponent<VectorCharTracker>();
+                    xOffset += (vct.width + generalXOffsetBoost) * stringScale;
+                    madeChar.GetComponent<AllPointManager>().SetToUiLayer();
+                    if (textCols != null && textCols.Length == 3)
+                    {
+                        madeChar.GetComponent<AllPointManager>().SetAllColors(new Color(textCols[0], textCols[1], textCols[2]));
+                    }
+                } else
+                {
+                    xOffset += (1 + generalXOffsetBoost) * stringScale;
+                }
            
+            }
+            yOffset -= baseYGap * stringScale;
         }
         vectorStrings.Add(vectorHolder);
         return vectorHolder;

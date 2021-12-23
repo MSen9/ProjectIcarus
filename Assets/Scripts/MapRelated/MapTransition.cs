@@ -17,7 +17,7 @@ public class MapTransition : MonoBehaviour
     float spinSpeed = 180f;
     float innerDist = 1.4f;
     float gravitateTime = 0;
-    float maxGravitateTime = 5f;
+    float maxGravitateTime = 2f;
     float gravityBoostRate = 5f;
     bool fadingOut = false;
 

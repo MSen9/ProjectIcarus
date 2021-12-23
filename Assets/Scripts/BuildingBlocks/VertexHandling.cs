@@ -8,7 +8,7 @@ public class VertexHandling : MonoBehaviour
     GameObject startPoint;
     public GameObject endPoint;
     public bool autoGetEndPoint = false;
-    AllPointManager pm;
+    AllPointManager apm;
     Vector3 lastStartPointPos;
     Vector3 lastEndPointPos;
     float ANGLE_OFFSET = 90f;
@@ -22,26 +22,28 @@ public class VertexHandling : MonoBehaviour
     bool canLoad = false;
     //used for things like bullets which to not spawn in at the start
     //public bool startFullyGrown = false;
-    float totalPointDist;
+    float xDist;
+    float yDist;
+    public float totalPointDist;
 
-    //float MIN_MOVE_CHECK = 0.001f;
-    public bool fixVertexPositions = true;
+    public bool setUpComplete = false;
     void Start()
     {
-        pm = transform.parent.parent.GetComponent<AllPointManager>();
-        if (pm.startFullyGrown || MapManager.current == null)
+        apm = transform.parent.parent.GetComponent<AllPointManager>();
+        if (apm.startFullyGrown || MapManager.current == null)
         {
             InstantGrowVertexes();
             return;
         }
-        growing = pm.growNormally;
+        growing = apm.growNormally;
         GetVertexBaseInfo();
+        GetPointDist();
         SetBaseVertexAngle();
-        //set scale to 0 so it grows out    
+        //set scale to 0 so it grows out
         transform.localScale = new Vector3(transform.localScale.x, 0,1f);
         //set the extend rate
-        extendTime = pm.extendTime;
-        extendRate = new Vector3(0f, ((totalPointDist / extendTime) / startPoint.transform.localScale.y) / pm.unitsPerScale);
+        extendTime = apm.extendTime;
+        extendRate = new Vector3(0f, ((totalPointDist / extendTime) / startPoint.transform.localScale.y) / apm.unitsPerScale);
 
 
     }
@@ -49,28 +51,39 @@ public class VertexHandling : MonoBehaviour
 
     public void InstantGrowVertexes()
     {
-        growing = false;
-        if (pm == null)
+        /*
+        if (setUpComplete && Application.isEditor == false)
         {
-            pm = transform.parent.parent.GetComponent<AllPointManager>();
+            return;
+        }
+        */
+        growing = false;
+        if (apm == null)
+        {
+            apm = transform.parent.parent.GetComponent<AllPointManager>();
         }
 
-        GetVertexBaseInfo();
+        if (GetVertexBaseInfo() == false)
+        {
+            return;
+        }
         if(endPoint == null)
         {
             //no end point, setting vector scale to 0
             transform.localScale = new Vector3(transform.localScale.x,0f, 1f);
             return;
         }
+        GetPointDist();
         SetBaseVertexAngle();
         SetToFullVertexLength();
+        setUpComplete = true;
         
     }
 
     public void SetVertexLength(float growthPercent)
     {
         float objScale = startPoint.transform.parent.lossyScale.y;
-        transform.localScale = new Vector3(transform.localScale.x, ((totalPointDist / pm.unitsPerScale) / objScale)*(growthPercent/100), 1f);
+        transform.localScale = new Vector3(transform.localScale.x, ((totalPointDist / apm.unitsPerScale) / objScale)*(growthPercent/100), 1f);
     }
 
     bool GetVertexBaseInfo()
@@ -78,10 +91,10 @@ public class VertexHandling : MonoBehaviour
 
         startPoint = transform.parent.gameObject;
 
-        if(pm == null)
+        if(apm == null || apm.points == null)
         {
            
-            Debug.LogError("No pointManager for object");
+            Debug.Log("No AllPointManager for: " + transform.parent.parent.name);
             return false;
         }
         //autoGetEndPoint = true;
@@ -90,10 +103,10 @@ public class VertexHandling : MonoBehaviour
             //will get the next point in the list of point gameobjects
             int startSibIndex = transform.parent.GetSiblingIndex();
             Transform pointOwner = transform.parent.parent;
-            int totalPoints = pm.points.Count;
+            int totalPoints = apm.points.Count;
             //get the next point on the list down
 
-            if (pm.points.ContainsKey(startSibIndex) == false)
+            if (apm.points.ContainsKey(startSibIndex) == false)
             {
                 Debug.LogError("Starting point is not within the points list");
                 return false;
@@ -108,9 +121,9 @@ public class VertexHandling : MonoBehaviour
                 {
                     currIndex = i;
                 }
-                if (pm.points.ContainsKey(currIndex))
+                if (apm.points.ContainsKey(currIndex))
                 {
-                    endPoint = pointOwner.GetChild(pm.points[currIndex]).gameObject;
+                    endPoint = pointOwner.GetChild(apm.points[currIndex]).gameObject;
                     break;
                 }
             }      
@@ -119,14 +132,19 @@ public class VertexHandling : MonoBehaviour
         return true;
     }
 
+    void GetPointDist()
+    {
+        xDist = startPoint.transform.position.x - endPoint.transform.position.x;
+        yDist = startPoint.transform.position.y - endPoint.transform.position.y;
+        totalPointDist = Mathf.Sqrt(Mathf.Pow(xDist, 2) +
+            Mathf.Pow(yDist, 2));
+    }
+
     void SetBaseVertexAngle()
     {
         //assume Point positions can't change while it is growing out
         //Get the distance in units with which the vector has to grow out
-        float xDist = startPoint.transform.position.x - endPoint.transform.position.x;
-        float yDist = startPoint.transform.position.y - endPoint.transform.position.y;
-        totalPointDist = Mathf.Sqrt(Mathf.Pow(xDist, 2) +
-            Mathf.Pow(yDist, 2));
+        
         float startAngle = Mathf.Atan2(yDist, xDist) * Mathf.Rad2Deg + ANGLE_OFFSET;
         //startPoint is parent so you only need to set that rotation
         startPoint.transform.rotation = Quaternion.Euler(0f, 0f, startAngle);
@@ -141,11 +159,15 @@ public class VertexHandling : MonoBehaviour
     void Update()
     {
         //stop the update early
-        if (canLoad == false && (MapManager.current == null || MapManager.current.vectorLoad == false))
-        { 
+        if (canLoad == false)
+        {
+            if (MapManager.current != null && MapManager.current.vectorLoad)
+            {
+                canLoad = true;
+            }
             return;
         }
-        canLoad = true;
+        
         //when valid change the rotation to face towards end point and grow until you reach it.
         //use the scale and distance between points to measure if it is done growing
         if (shrinking)
@@ -163,32 +185,14 @@ public class VertexHandling : MonoBehaviour
         else if (growing)
         {
             transform.localScale += extendRate*Time.deltaTime;
-            if (totalPointDist < transform.localScale.y * pm.unitsPerScale)
+            if (totalPointDist < transform.localScale.y * apm.unitsPerScale)
             {
                 SetToFullVertexLength();
                 growing = false;
                 //also record for positional changes
                 RefreshLastPositions();
             }
-        } else
-        {
-            //do code to check for point moving and update the vetex locations
-            /*
-            if (fixVertexPositions && endPoint != null)
-            {
-                if((lastStartPointPos - startPoint.transform.localPosition).magnitude > MIN_MOVE_CHECK ||
-                    (lastEndPointPos - endPoint.transform.localPosition).magnitude > MIN_MOVE_CHECK)
-                {
-                    SetBaseVertexAngle();
-                    SetToFullVertexLength();
-                }
-                RefreshLastPositions();
-            }
-            */
-
-
-            
-        }
+        } 
     }
 
     public void RefreshLastPositions()
@@ -204,9 +208,7 @@ public class VertexHandling : MonoBehaviour
     public void StartShrinking(float shrinkTime)
     {
         shrinking = true;
+        extendRate = new Vector3(0f, -1 * totalPointDist / extendTime / startPoint.transform.localScale.y / apm.unitsPerScale/ shrinkTime);
         totalDeathTime = shrinkTime;
-        extendRate *= -1*extendTime;
-        extendRate /= totalDeathTime;
-        fixVertexPositions = false;
     }
 }

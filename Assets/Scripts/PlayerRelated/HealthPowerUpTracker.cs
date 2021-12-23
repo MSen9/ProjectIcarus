@@ -5,6 +5,7 @@ using UnityEngine;
 public enum trackedTypes
 {
     health,
+    clears,
     fireRate,
     shotSize,
     manaGen,
@@ -23,29 +24,33 @@ public class HealthPowerUpTracker : MonoBehaviour
     GameObject player;
     PlayerShooting ps;
     HealthHandling hh;
+    BulletClears bc;
     bool listsSetUp = false;
-    public GameObject[] objTypes = new GameObject[8];
+    public GameObject[] objTypes = new GameObject[9];
 
-    public GameObject[] groups = new GameObject[8];
+    public GameObject[] groups = new GameObject[9];
 
-    GameObject[] pupTexts = new GameObject[8];
+    GameObject[] pupTexts = new GameObject[9];
 
-    public float[] scales = new float[8];
+    public float[] scales = new float[9];
 
-    int[] counts = { 0, 0, 0, 0, 0, 0, 0, 0};
+    int[] counts = { 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     float destroyTime = 2f;
     float destroyVel = 1f;
     float destroyRotation = 60f;
     float yFixScaling = -0.4f;
     List<List<GameObject>> trackedObjs = new List<List<GameObject>>(4);
-
+    public GameObject bossHPBar;
+    public GameObject gameOverInfo;
+    public static HealthPowerUpTracker current;
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         ps = player.GetComponent<PlayerShooting>();
         hh = player.GetComponent<HealthHandling>();
-        
+        bc = player.GetComponent<BulletClears>();
+        current = this;
     }
 
     void SetUpLists()
@@ -71,7 +76,7 @@ public class HealthPowerUpTracker : MonoBehaviour
     {
         SetUpLists();
         int tType = (int)type;
-        if(tType == 0)
+        if(tType == 0 || tType == 1)
         {
             ClassicRemoveUIObj(type);
             return;
@@ -122,7 +127,7 @@ public class HealthPowerUpTracker : MonoBehaviour
     {
         SetUpLists();
         int tType = (int)type;
-        if(type == 0)
+        if(tType == 0 || tType == 1)
         {
             ClassicMakeUIObj(type);
             return;

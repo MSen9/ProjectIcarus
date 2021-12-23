@@ -129,12 +129,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bullet: {fileID: 597255955214587396, guid: 5a6602669bd02214da14dacb097d08b9, type: 3}
-  reloadTime: 2
+  reloadTime: 1.25
   fireType: 0
   canShoot: 0
+  clearActive: 0
   shootDistOffset: 0.3
   scaleMod: 2
   speedMod: 0.75
+  oneBullet: {fileID: 0}
+  alwaysShoot: 0
 --- !u!114 &4978306525079049371
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,10 +150,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6431aa2b62fb0f447af630d8e1722eea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseMoveSpeed: 0.75
+  baseMoveSpeed: 1.25
   rotateRate: 20
-  fireRange: 50
-  fireMovementMod: 0.5
+  fireRange: 30
+  fireMovementMod: 1
   fireRangeGraceTime: 1
 --- !u!50 &2230310647352797527
 Rigidbody2D:

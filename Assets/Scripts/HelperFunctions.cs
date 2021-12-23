@@ -53,6 +53,12 @@ public static class HelperFunctions
         healthPupTracker.MakeUIObj(trackedTypes.health);
     }
 
+    static public void GainClear()
+    {
+        GameObject.FindGameObjectWithTag("Player").GetComponent<BulletClears>().clears++;
+        HealthPowerUpTracker healthPupTracker = GameObject.FindGameObjectWithTag("Canvas").GetComponent<HealthPowerUpTracker>();
+        healthPupTracker.MakeUIObj(trackedTypes.clears);
+    }
     static public void GainPowerUp(PowerUpType pType, int pupCount = 1)
     {
         if(pupCount == 0)
@@ -91,6 +97,26 @@ public static class HelperFunctions
                 healthPupTracker.MakeUIObj(trackedTypes.shotSplit, pupCount);
                 pShooting.shotSplitBuffs += pupCount;
                 break;
+            case PowerUpType.OMEGA:
+                healthPupTracker.MakeUIObj(trackedTypes.fireRate, pupCount);
+                pShooting.fireRateBuffs += pupCount;
+                healthPupTracker.MakeUIObj(trackedTypes.shotSize, pupCount);
+                pShooting.shotSizeBuffs += pupCount;
+                healthPupTracker.MakeUIObj(trackedTypes.manaGen, pupCount);
+                pShooting.manaGenBuffs += pupCount;
+                healthPupTracker.MakeUIObj(trackedTypes.shotPen, pupCount);
+                pShooting.shotPenBuffs += pupCount;
+                int randomMegaType = Random.Range((int)PowerUpType.shotSpread,(int)PowerUpType.shotSplit + 1);
+                GainPowerUp((PowerUpType)randomMegaType, pupCount);
+                /*
+                healthPupTracker.MakeUIObj(trackedTypes.shotSpread, pupCount);
+                pShooting.shotSpreadBuffs += pupCount;
+                healthPupTracker.MakeUIObj(trackedTypes.shotExplode, pupCount);
+                pShooting.shotExplodeBuffs += pupCount;
+                healthPupTracker.MakeUIObj(trackedTypes.shotSplit, pupCount);
+                pShooting.shotSplitBuffs += pupCount;
+                */
+                break;
             default:
                 Debug.LogError("Error: No powerup type on powerUp");
                 break;
@@ -100,31 +126,52 @@ public static class HelperFunctions
         pShooting.UpdateBuffs();
     }
 
-    static public void LosePowerUp(PowerUpType pType)
+    static public bool LosePowerUp(PowerUpType pType)
     {
         HealthPowerUpTracker healthPupTracker = GameObject.FindGameObjectWithTag("Canvas").GetComponent<HealthPowerUpTracker>();
         PlayerShooting pShooting = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerShooting>();
         switch (pType)
         {
             case PowerUpType.fireRate:
+                if(pShooting.fireRateBuffs <= 0)
+                {
+                    return false;
+                }
                 healthPupTracker.RemoveUIObj(trackedTypes.fireRate);
                 pShooting.fireRateBuffs--;
                 break;
             case PowerUpType.shotSize:
+                if (pShooting.shotSizeBuffs <= 0)
+                {
+                    return false;
+                }
                 healthPupTracker.RemoveUIObj(trackedTypes.shotSize);
                 pShooting.shotSizeBuffs--;
                 break;
             case PowerUpType.manaGen:
+                if (pShooting.manaGenBuffs <= 0)
+                {
+                    return false;
+                }
                 healthPupTracker.RemoveUIObj(trackedTypes.manaGen);
                 pShooting.manaGenBuffs--;
+                break;
+            case PowerUpType.shotPen:
+                if (pShooting.shotPenBuffs <= 0)
+                {
+                    return false;
+                }
+                healthPupTracker.RemoveUIObj(trackedTypes.shotPen);
+                pShooting.shotPenBuffs--;
                 break;
             default:
                 Debug.LogError("Error: No powerup type on powerUp");
                 break;
 
         }
-
+        
         pShooting.UpdateBuffs();
+        return true;
     }
 
     public static List<Vector3> GetEquilateralShapePointPositions(int pointCount, float pointCenterDist, float angleOffset)

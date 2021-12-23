@@ -7,6 +7,7 @@ public class HealthHandling : MonoBehaviour
     // Start is called before the first frame update
     public bool isPlayer = false;
     public int health = 1;
+    int startHealth = 1;
     public float invincibilityTime = 0f;
     float currInvincibilityTime = 0f;
 
@@ -33,6 +34,7 @@ public class HealthHandling : MonoBehaviour
 
     public AudioClip damageSound;
     public float damageVolume = 0.5f;
+    
     void Start()
     {
         //colliders = GetComponents<BoxCollider2D>();
@@ -55,7 +57,10 @@ public class HealthHandling : MonoBehaviour
             mapManager.EnemySpawn(gameObject);
         }
 
+        startHealth = health;
+
     }
+
 
     // Update is called once per frame
     void Update()
@@ -63,6 +68,10 @@ public class HealthHandling : MonoBehaviour
         currInvincibilityTime -= Time.deltaTime;
     }
 
+    public float GetHealthFraction()
+    {
+        return health / (float)startHealth;
+    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //Debug.Log("Main bullet has hit trigger");
@@ -119,9 +128,10 @@ public class HealthHandling : MonoBehaviour
                     
                 }
                 bulletInfo.shotPen--;
+                bulletInfo.ExplodeShot(gameObject);
                 if (bulletInfo.shotPen == 0)
                 {
-                    bulletInfo.ExplodeShot();
+                    
                     collision.gameObject.GetComponent<AllPointManager>().BreakBullet();
                 }
                 
@@ -138,11 +148,11 @@ public class HealthHandling : MonoBehaviour
                     }
                     //TODO: Assign tint on pShooting so they change to that color slightly while immune
                     //process the powerup
-                    HelperFunctions.GainPowerUp(bulletInfo.powerType);
+                    HelperFunctions.GainPowerUp(bulletInfo.powerType, bulletInfo.powerUpCount);
 
                     pShooting.currPowerUpImmunity = pShooting.powerUpImmunityTime;
                     pShooting.powerUpCol = Color.Lerp(Color.black,collision.gameObject.GetComponent<AllPointManager>().GetPointColor(),0.8f);
-                    SoundPlayer.MakeOnlySound(bulletInfo.powerUpHit, 0.5f);
+                    SoundPlayer.MakeOnlySound(bulletInfo.powerUpHit, bulletInfo.powerUpVolume);
                     //powerUpIsNoLongerNeeded
                     Destroy(collision.gameObject);
                 }
@@ -166,16 +176,23 @@ public class HealthHandling : MonoBehaviour
         {
             GetComponent<PlayerShooting>().enabled = false;
             GetComponent<PlayerMovement>().enabled = false;
+            MapManager.current.MapDeath();
         }
         else
         {
             GetComponent<EnemyMovement>().enabled = false;
+            if (GetComponent<EnemyShooting>().oneBullet != null)
+            {
+                GetComponent<EnemyShooting>().oneBullet.GetComponent<AllPointManager>().BreakBullet();
+            }
             GetComponent<EnemyShooting>().enabled = false;
+            
             mapManager.EnemyDeath(gameObject);
+            
+            Destroy(gameObject, deathTime);
         }
-
         pm.DeathAnimation(deathMove, deathRotate, deathTime);
-        Destroy(gameObject, deathTime);
+
         this.enabled = false;
     }
    

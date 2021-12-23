@@ -15,7 +15,8 @@ public enum PowerUpType
     shotPen,
     shotSpread,
     shotExplode,
-    shotSplit
+    shotSplit,
+    OMEGA
 }
 
 public class BulletMove : MonoBehaviour
@@ -33,6 +34,7 @@ public class BulletMove : MonoBehaviour
     Rigidbody2D rb;
     SoundPlayer sp;
     public AudioClip shotSound;
+    public float powerUpVolume = 0.5f;
     public AudioClip powerUpHit;
     List<Vector3> nList;
     //keeps a list of entities already hit by the bullet, stops 'double hits'
@@ -45,18 +47,27 @@ public class BulletMove : MonoBehaviour
     float SHOT_SPLIT_ANGLE_BOOST = 20f;
     float SHOT_SPLIT_ANGLE_NERF = 4 / 5f;
     float SPLIT_SHOT_SECONDS_BACK = 1 / 10f;
+    public float accelerationRate = 0;
+    public bool canBounce = false;
+    public bool wallImmune = false;
+    public bool bounceOnce = false;
+    public bool explodedShot = false;
     // Start is called before the first frame update
-
+    public int powerUpCount = 1;
     void Start()
     {
-        if (bulletType != BulletType.powerUp)
+        if (bulletType != BulletType.powerUp || canBounce || bounceOnce)
         {
             nList = new List<Vector3>();
             ignoreWalls = new List<Collider2D>();
+            if (explodedShot == false)
+            {
+                alreadyHit = new List<GameObject>();
+            }
         }
-        moveVals = (transform.rotation * Vector2.up) * frameSpeed * moveSpeed;
+        UpdateMovement();
         rb = GetComponent<Rigidbody2D>();
-        alreadyHit = new List<GameObject>();
+        
         sp = GetComponent<SoundPlayer>();
 
     }
@@ -72,6 +83,10 @@ public class BulletMove : MonoBehaviour
     }
 
     // Update is called once per frame
+    public void UpdateMovement()
+    {
+        moveVals = (transform.rotation * Vector2.up) * frameSpeed * moveSpeed;
+    }
     void FixedUpdate()
     {
         if (hitWall)
@@ -79,11 +94,17 @@ public class BulletMove : MonoBehaviour
             ChangeMovement(nList);
             hitWallFramePassed = true;
             nList.Clear();
+            bounceOnce = false;
         }
         //move the BIG SHOT (or regular shot)
         rb.MovePosition(rb.position + moveVals);
         //transform.position += moveVals;
         hitWall = false;
+        if(accelerationRate != 0)
+        {
+            moveSpeed += accelerationRate * Time.fixedDeltaTime;
+            UpdateMovement();
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -91,11 +112,15 @@ public class BulletMove : MonoBehaviour
         //Debug.Log("Main bullet has hit trigger");
         if(collision.tag == "Wall")
         {
-            
-            if(bulletType == BulletType.powerUp)
+            if (wallImmune)
+            {
+                return;
+            }
+
+            if (bulletType == BulletType.powerUp && canBounce == false && bounceOnce == false)
             {
                 //TODO: add an animation to the bullet falling apart
-                GetComponent<AllPointManager>().BreakBullet(0.1f,30f,0.5f);
+                GetComponent<AllPointManager>().BreakBullet(0.1f,30f,0.3f);
                 return;
             }
             if (ignoreWalls.Contains(collision))
@@ -110,6 +135,10 @@ public class BulletMove : MonoBehaviour
             }
             if(shotSplits > 0)
             {
+                if (bulletType == BulletType.powerUp)
+                {
+                    transform.localScale -= new Vector3(0.5f, 0.5f);
+                }
                 float leftmostOffset = (SHOT_SPLIT_ANGLE_BOOST * shotSplits) * (SHOT_SPLIT_ANGLE_NERF * shotSplits);
                 float offsetShift = leftmostOffset / ((shotSplits * 2) - 1);
                 Vector3 moveValsBack =  moveVals / (frameSpeed / SPLIT_SHOT_SECONDS_BACK);
@@ -123,10 +152,10 @@ public class BulletMove : MonoBehaviour
                     bm.moveVals = (transform.rotation * Vector2.up) * frameSpeed * moveSpeed;
                     bm.shotPen = shotPen;
                     bm.shotSplits = 0;
-
+                    
                 }
                 shotSplits = 0;
-            }
+            } 
            
             //rotate the bullet and move it based on excess movement and 
             ignoreWalls.Add(collision);
@@ -144,14 +173,15 @@ public class BulletMove : MonoBehaviour
         }
     }
 
-    public void ExplodeShot()
+    public void ExplodeShot(GameObject hitTarget)
     {
+        float baseExplodeShots = 2;
         for (int i = 0; i < shotExplodes; i++)
         {
-            for (int j = 0; j < baseShotPen; j++)
+            for (int j = 0; j < baseExplodeShots; j++)
             {
                 GameObject splitBullet = Instantiate(this.gameObject, transform.position,
-                        Quaternion.Euler(0, 0, transform.rotation.eulerAngles.z - ((i*baseShotPen)+j)/(float)(shotExplodes*baseShotPen) * 360f));
+                        Quaternion.Euler(0, 0, transform.rotation.eulerAngles.z - (0.5f+(i*shotExplodes)+j)/(float)(shotExplodes* baseExplodeShots) * 360f));
                 splitBullet.transform.parent = GameObject.FindGameObjectWithTag("BulletList").transform;
                 BulletMove bm = splitBullet.GetComponent<BulletMove>();
                 //splitBullet.transform.localScale = transform.localScale;
@@ -160,6 +190,9 @@ public class BulletMove : MonoBehaviour
                 bm.baseShotPen = baseShotPen;
                 bm.shotExplodes = 0;
                 bm.shotSplits = shotSplits;
+                bm.explodedShot = true;
+                bm.alreadyHit = new List<GameObject>();
+                bm.alreadyHit.Add(hitTarget);
             }
         }
         shotExplodes = 0;

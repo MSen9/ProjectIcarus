@@ -28,15 +28,25 @@ public class MapManager : MonoBehaviour
     public GameObject spawner;
     public bool mapOver;
     public GameObject currencyThing;
+    bool allMustDie = false;
+    public bool deathPause = false;
+    bool isPaused = false;
+    bool backToMenu = false;
 
     public GameObject shop;
+    public GameObject gameEnd;
     float WALL_DESTROY_TIME = 2;
     float SHOP_SPAWN_TIME = 3;
     float SPAWN_LEVEL_TRANS = 4;
+    float SPAWN_BOSS_TIME = 3;
+    float END_SPAWN_TIME = 3;
     public bool goingToNextLevel;
     public bool nextLevelFadeOut;
     public AudioClip defaultSong;
+    public AudioClip bossMusic;
+    public AudioClip gameOverMusic;
     public float fadeOutTime;
+    
 
     public GameObject levelTransition;
     GameObject player;
@@ -49,7 +59,13 @@ public class MapManager : MonoBehaviour
     float allowedSpawnOffset;
     public GameObject waveTextSpot;
     GameObject waveText;
+    List<EnemyInfo> canSpawn;
+    List<EnemyInfo> weightedSpawnList;
     //bool debugOn = true;
+    GameObject eList;
+    GameObject bulletList;
+    GameObject spawnerList;
+
     void OnEnable()
     {
         current = this;
@@ -64,7 +80,7 @@ public class MapManager : MonoBehaviour
 
         //hardcoded values for now
         currWave = 0;
-        waveDifficultyScaling = 5;
+        waveDifficultyScaling = Mathf.RoundToInt(2 * Mathf.Pow(currMapInfo.heightPos,1/3f));
         totalWaves = currMapInfo.waves;
 
         rm = GameObject.FindGameObjectWithTag("RunManager").GetComponent<RunManager>();
@@ -74,8 +90,13 @@ public class MapManager : MonoBehaviour
         fadeOutTime = 2f;
 
         player = GameObject.FindGameObjectWithTag("Player");
+        GetSpawnAbles();
 
-        
+        eList = GameObject.FindGameObjectWithTag("EnemyList");
+        bulletList = GameObject.FindGameObjectWithTag("BulletList");
+        spawnerList = GameObject.FindGameObjectWithTag("SpawnerList");
+
+        MusicPlayer.current.PlaySong(defaultSong);
     }
 
     struct WaveInfo
@@ -97,6 +118,12 @@ public class MapManager : MonoBehaviour
             {
                 BackToRunMap();
             }
+        } else if (backToMenu)
+        {
+            if (LightTransition.current.fadedOut)
+            {
+                SceneTransition.current.GoToScene("Menu");
+            }
         }
 
         if(doneLoading == false)
@@ -107,8 +134,15 @@ public class MapManager : MonoBehaviour
             }
             return;
         }
-        currWaveTime -= Time.deltaTime;
-        if((waveDeath && livingEnemies.Count <= 0) || currWaveTime < 0)
+        if(isPaused == false)
+        {
+            currWaveTime -= Time.deltaTime;
+        } else
+        {
+            return;
+        }
+        
+        if((waveDeath && livingEnemies.Count <= 0) || (currWaveTime < 0 && allMustDie == false) )
         {
             if (wavesDone == false)
             {
@@ -117,7 +151,7 @@ public class MapManager : MonoBehaviour
         }
         
 
-        if (wavesDone && mapOver == false)
+        if (wavesDone && mapOver == false && isPaused == false)
         {
             wavesDoneGracePeriod -= Time.deltaTime;
             if(wavesDoneGracePeriod <= 0)
@@ -130,7 +164,14 @@ public class MapManager : MonoBehaviour
             }
         }
 
-        if (Input.GetKey(KeyCode.F1) && mapOver == false)
+        if (Input.GetKeyDown(KeyCode.F2) && mapOver == false && currMapInfo.bossLevel == true)
+        {
+            DestroyAllEnemies();
+            currWave = totalWaves;
+            wavesDone = !NewWave();
+        }
+
+        if (Input.GetKeyDown(KeyCode.F1) && mapOver == false)
         {
             DestroyAllEnemies();
             wavesDone = true;
@@ -138,10 +179,14 @@ public class MapManager : MonoBehaviour
         }
     }
 
+    public void BackToMenu()
+    {
+        LightTransition.current.StartFadeOut(1);
+        backToMenu = true;
+    }
 
     void DestroyAllEnemies()
     {
-        GameObject eList = GameObject.FindGameObjectWithTag("EnemyList");
         for (int i = 0; i < eList.transform.childCount; i++)
         {
             GameObject currChild = eList.transform.GetChild(i).gameObject;
@@ -152,35 +197,105 @@ public class MapManager : MonoBehaviour
             }
         }
     }
-    void EndMap()
+    public void MapDeath()
     {
-        //disable all bullets
         spawnsAllowed = false;
         mapOver = true;
-        GameObject bulletList = GameObject.FindGameObjectWithTag("BulletList");
+        deathPause = true;
+        PauseAll();
+        HealthPowerUpTracker.current.gameOverInfo.SetActive(true);
+        MusicPlayer.current.PlaySong(gameOverMusic);
+    }
+
+    void PauseAll()
+    {
+        isPaused = true;
+        for (int i = 0; i < bulletList.transform.childCount; i++)
+        {
+            GameObject currBullet = bulletList.transform.GetChild(i).gameObject;
+            currBullet.GetComponent<BulletMove>().enabled = false;
+            if(currBullet.GetComponent<AutoScaling>() != false)
+            {
+                currBullet.GetComponent<AutoScaling>().enabled = false;
+            }
+
+            if (currBullet.GetComponent<FollowPlayer>() != false)
+            {
+                currBullet.GetComponent<FollowPlayer>().enabled = false;
+            }
+
+        }
+
+        for (int i = 0; i < eList.transform.childCount; i++)
+        {
+            GameObject currChild = eList.transform.GetChild(i).gameObject;
+            currChild.GetComponent<HealthHandling>().enabled = false;
+            EnemyShooting[] eShootings = currChild.GetComponents<EnemyShooting>();
+            for (int j = 0; j < eShootings.Length; j++)
+            {
+                eShootings[j].enabled = false;
+            }
+            currChild.GetComponent<EnemyMovement>().enabled = false;
+        }
+
+        for (int i = 0; i < spawnerList.transform.childCount; i++)
+        {
+            GameObject currChild = spawnerList.transform.GetChild(i).gameObject;
+            currChild.GetComponent<SpawnManager>().enabled = false;
+        }
+    }
+    void ClearBullets(bool spawnMoney = true)
+    {
+        
         for (int i = 0; i < bulletList.transform.childCount; i++)
         {
             GameObject currBullet = bulletList.transform.GetChild(i).gameObject;
             if (currBullet.GetComponent<BulletMove>().bulletType == BulletType.damage)
             {
-                Instantiate(currencyThing, currBullet.transform.position, currBullet.transform.rotation);
+                if (spawnMoney)
+                {
+                    Instantiate(currencyThing, currBullet.transform.position, currBullet.transform.rotation);
+                }
+                
             }
             currBullet.GetComponent<AllPointManager>().BreakBullet();
+            
         }
+    }
+    void EndMap()
+    {
+        //disable all bullets
+        spawnsAllowed = false;
+        mapOver = true;
+        ClearBullets();
+        
         
         //destroy the walls after a delay
         StartCoroutine(DestroyWalls());
+        player.GetComponent<PlayerShooting>().EndShooting();
+        player.GetComponent<PlayerMovement>().SetCamBounds();
+        CamManager.current.EndMapCam(player.transform.position);
         //Spawn shop shortly after walls are destroyed
+        if (currMapInfo.bossLevel)
+        {
+            //TODO: End the game
+            GameEnd();
+            return;
+        }
         StartCoroutine(SpawnShop());
         //Spawns level transition shortly after shop is spawned
         StartCoroutine(SpawnLevelTransition());
 
         //disable player shooting
-        player.GetComponent<PlayerShooting>().EndShooting();
-        player.GetComponent<PlayerMovement>().SetCamBounds();
-        CamManager.current.EndMapCam(player.transform.position);
+        
         
         Debug.Log("Map is completed!");
+    }
+
+    void GameEnd()
+    {
+        Debug.Log("Game is completed!");
+        StartCoroutine(SpawnGameEnd());
     }
 
 
@@ -215,11 +330,38 @@ public class MapManager : MonoBehaviour
         yield return new WaitForSeconds(SHOP_SPAWN_TIME);
         GameObject madeShop = Instantiate(shop, new Vector3(shopXSpawn, shopYSpawn), Quaternion.identity);
         madeShop.GetComponent<ShopManager>().yEnd = shopYEnd;
+        madeShop.GetComponent<ShopManager>().mapDepth = currMapInfo.heightPos;
+    }
+
+    IEnumerator SpawnGameEnd()
+    {
+        float endYSpawn = player.transform.position.y - 30;
+        float endYEnd = player.transform.position.y + 11.5f;
+        float endXSpawn = player.transform.position.x;
+        yield return new WaitForSeconds(END_SPAWN_TIME);
+        
+        Vector3 startPos = new Vector3(endXSpawn, endYSpawn);
+        GameObject madeEnd = Instantiate(gameEnd, startPos, Quaternion.identity);
+        madeEnd.GetComponent<GameEnd>().yEnd = endYEnd;
+        madeEnd.GetComponent<GameEnd>().posStart = startPos;
     }
 
     bool NewWave()
     {
         waveDeath = false;
+        if (currMapInfo.bossLevel && currWave == totalWaves-1)
+        {
+            allMustDie = true;
+        }
+        if (currMapInfo.bossLevel && currWave == totalWaves)
+        {
+            allMustDie = true;
+            ClearBullets(false);
+            MusicPlayer.current.PlaySong(bossMusic);
+            StartCoroutine(SpawnBoss());
+            currWave++;
+            return true;
+        }
         if(totalWaves <= currWave)
         {
             return false;
@@ -232,7 +374,7 @@ public class MapManager : MonoBehaviour
         {
             foreach (EnemyInfo eInfo in newestWave.waveGroups[i])
             {
-                SpawnEnemy(eInfo, spawnLocations[(i + randomGroupOffset) % spawnLocations.Count]);
+                SpawnEnemy(eInfo, spawnLocations[(i + randomGroupOffset) % spawnLocations.Count].position);
             }
         }
         
@@ -240,7 +382,14 @@ public class MapManager : MonoBehaviour
         return true;
     }
 
-    void SpawnEnemy(EnemyInfo eInfo, Transform spawnLocation)
+    IEnumerator SpawnBoss()
+    {
+        
+        yield return new WaitForSeconds(SPAWN_BOSS_TIME);
+        SpawnEnemy(RunManager.current.GetFinalEnemy(), Vector3.zero);
+    }
+
+    void SpawnEnemy(EnemyInfo eInfo, Vector3 spawnLocation)
     {
         string ePath = Path.Combine("Enemies", eInfo.fileName);
         GameObject spawnEnemy = Resources.Load(ePath) as GameObject;
@@ -250,12 +399,37 @@ public class MapManager : MonoBehaviour
             return;
         }
         Vector3 spawnOffset = new Vector3(Random.Range(-1*allowedSpawnOffset, allowedSpawnOffset), Random.Range(-1* allowedSpawnOffset, allowedSpawnOffset));
-        GameObject madeSpawner = Instantiate(spawner, spawnLocation.transform.position + spawnOffset, Quaternion.identity);
+        GameObject madeSpawner = Instantiate(spawner, spawnLocation + spawnOffset, Quaternion.identity);
         SpawnManager sm = madeSpawner.GetComponent<SpawnManager>();
         sm.spawnObject = spawnEnemy;
         sm.spawnSize = eInfo.spawnSize;
+        madeSpawner.transform.parent = spawnerList.transform;
     }
     //A random generator for waves
+
+    void GetSpawnAbles()
+    {
+        canSpawn = new List<EnemyInfo>();
+        foreach (EnemyInfo eInfo in rm.enemies)
+        {
+            if (eInfo.spawnNormally && eInfo.minMapSpawn <= currMapInfo.heightPos && currMapInfo.heightPos <= eInfo.maxMapSpawn)
+            {
+                canSpawn.Add(eInfo);
+            }
+        }
+
+        weightedSpawnList = new List<EnemyInfo>();
+        foreach(EnemyInfo eInfo in canSpawn)
+        {
+            int waveGap = eInfo.maxMapSpawn - eInfo.minMapSpawn;
+            float spawnProg = (float)(currMapInfo.heightPos - eInfo.minMapSpawn) / (float)waveGap;
+            int trueSpawnRate = Mathf.FloorToInt(Mathf.Lerp(eInfo.startSpawnRate,eInfo.endSpawnRate, spawnProg));
+            for (int i = 0; i < trueSpawnRate; i++)
+            {
+                weightedSpawnList.Add(eInfo);
+            }
+        }
+    }
     WaveInfo DynamicWaveGen()
     {
         //Generates wabes based on these (input) factors
@@ -267,15 +441,7 @@ public class MapManager : MonoBehaviour
         //Wave time (higher time means more enemies)
         //for now just try to make each wave 10 seconds
         int overallDifficulty = rm.runDifficulty + currWave*waveDifficultyScaling;
-        List<EnemyInfo> canSpawn = new List<EnemyInfo>();
         
-        foreach(EnemyInfo eInfo in rm.enemies)
-        {
-            if(eInfo.difficulty < overallDifficulty && eInfo.spawnNormally && eInfo.minMapSpawn <= currMapInfo.heightPos && currMapInfo.heightPos <= eInfo.maxMapSpawn)
-            {
-                canSpawn.Add(eInfo);
-            }
-        }
 
         if (canSpawn.Count <= 0)
         {
@@ -288,24 +454,14 @@ public class MapManager : MonoBehaviour
         while (overallDifficulty > 0)
         {
 
-            int randomEnemy = Random.Range(0, canSpawn.Count);
-            EnemyInfo selectedEnemy = canSpawn[randomEnemy];
-            if(selectedEnemy.difficulty > overallDifficulty)
-            {
-                canSpawn.Remove(selectedEnemy);
-                if(canSpawn.Count <= 0)
-                {
-                    overallDifficulty = 0;
-                }
-            } else
-            {
-                overallDifficulty -= selectedEnemy.difficulty;
-                allEnemies.Add(selectedEnemy);
-            }
+            int randomEnemy = Random.Range(0, weightedSpawnList.Count);
+            EnemyInfo selectedEnemy = weightedSpawnList[randomEnemy];
+            overallDifficulty -= selectedEnemy.difficulty;
+            allEnemies.Add(selectedEnemy);
         }
 
         //now have a list on enemies, decide how many groups to use
-        int groups = Random.Range(1, spawnLocations.Count + 1);
+        int groups = Random.Range(2, spawnLocations.Count + 1);
         List<List<EnemyInfo>> enemyGroups = new List<List<EnemyInfo>>();
         for (int i = 0; i < groups; i++)
         {
@@ -350,8 +506,8 @@ public class MapManager : MonoBehaviour
     public void BackToRunMap()
     {
         BetweenMapInfo.current.SaveMapInfo();
-        //RunManager.current.runDifficulty += 10;
-        SceneManager.LoadScene("RunMap");
+        RunManager.current.runDifficulty += 5;
+        SceneTransition.current.GoToScene("RunMap");
     }
 
     
@@ -423,7 +579,7 @@ public class MapManager : MonoBehaviour
             madeWall.transform.parent = wallParent.transform;
             wallsMade.Add(madeWall);
         }
-        float spawnerFromWallDist = 0.2f;
+        float spawnerFromWallDist = 0.35f;
         foreach (GameObject eachWall in wallsMade)
         {
             Vector3 spawnPointPos = Vector3.Lerp(eachWall.transform.position, Vector3.zero, spawnerFromWallDist);

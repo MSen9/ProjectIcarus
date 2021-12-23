@@ -1666,9 +1666,17 @@ MonoBehaviour:
   bulletType: 1
   powerType: 6
   shotSound: {fileID: 0}
-  powerUpHit: {fileID: 8300000, guid: 6d169dd710472d342b69dd246dfb7467, type: 3}
+  powerUpHit: {fileID: 8300000, guid: 101747e9d4aaf6742bceb0cbaf77666e, type: 3}
   alreadyHit: []
   shotPen: 3
+  baseShotPen: 0
+  shotSplits: 0
+  shotExplodes: 0
+  accelerationRate: 0
+  canBounce: 0
+  wallImmune: 0
+  bounceOnce: 0
+  powerUpCount: 1
 --- !u!50 &3761924024624048166
 Rigidbody2D:
   serializedVersion: 4

@@ -10,23 +10,27 @@ public struct ShopItemInfo
     public int cost;
     public int costVariance;
     public bool spawnNormally;
+    public int startSpawnDepth;
 
-    public ShopItemInfo(string fileName, int cost, int costVariance = 0, bool spawnNormally = true)
+    public ShopItemInfo(string fileName, int cost, int costVariance = 0, bool spawnNormally = true, int startSpawnDepth = 0)
     {
         this.fileName = fileName;
         this.cost = cost;
         this.costVariance = costVariance;
         this.spawnNormally = spawnNormally;
+        this.startSpawnDepth = startSpawnDepth;
     }
     
 }
 public enum BuyEffects
 {
     none,
-    gainHp,
+    gainHp,  
     gainPowerUp,
     gainRandomBasicPowerUp,
-    losePowerUp
+    losePowerUp,
+    loseRandomBasicPowerUp,
+    gainClear,
 }
 public class ShopManager : MonoBehaviour
 {
@@ -40,20 +44,28 @@ public class ShopManager : MonoBehaviour
     float moveTime = 0;
     float maxMoveTime = 2;
     bool yEndReached = false;
+    public int mapDepth;
     // Start is called before the first frame update
     float shopItems = 9;
     void Start()
     {
+        int level = RunRouteManager.current.GetCurrentRunNode().heightPos;
         current = this;
         player = GameObject.FindGameObjectWithTag("Player");
         healthPupTracker = GameObject.FindGameObjectWithTag("Canvas").GetComponent<HealthPowerUpTracker>();
         possibleItems = new List<ShopItemInfo>();
-        possibleItems.Add(new ShopItemInfo("HeartShopItem", 20,0,false));
+        possibleItems.Add(new ShopItemInfo("HeartShopItem", 10*(level+1),0,false));
+        possibleItems.Add(new ShopItemInfo("LoseRandomBasicPUP", 5 * (level + 1), 0, false));
+        possibleItems.Add(new ShopItemInfo("AntiVectorShopItem", 5 * (level + 1), 0, false));
         possibleItems.Add(new ShopItemInfo("BasicFireRatePUP", -10, 5));
         possibleItems.Add(new ShopItemInfo("BasicPowerGenPUP", -10, 5));
         possibleItems.Add(new ShopItemInfo("BasicShotSizePUP", -10, 5));
         possibleItems.Add(new ShopItemInfo("BasicShotPenPUP", -10, 5));
         possibleItems.Add(new ShopItemInfo("RandomBasicPUP", -15, 5));
+        possibleItems.Add(new ShopItemInfo("ShotSpreadPUP", -100, 50,true,5));
+        possibleItems.Add(new ShopItemInfo("ShotSplitPUP", -100, 50,true,6));
+        possibleItems.Add(new ShopItemInfo("ShotExplodePUP", -100, 50, true, 7));
+
         //make the shop items
         MakeShopItems();
         startPos = transform.position;
@@ -65,7 +77,7 @@ public class ShopManager : MonoBehaviour
         //randomly makes a set of 5 shop items
         foreach(ShopItemInfo sio in possibleItems)
         {
-            if (sio.spawnNormally)
+            if (sio.spawnNormally && sio.startSpawnDepth <= mapDepth)
             {
                 spawnNormallyList.Add(sio);
             }
@@ -77,8 +89,12 @@ public class ShopManager : MonoBehaviour
         float spawnXOffsetChange = 6;
         float spawnYOffsetChange = -4;
         int newRowCount = 5;
+        
         for (int i = 1; i < shopItems; i++)
         {
+
+            
+            //Handles spawn Position
             if (i == newRowCount)
             {
                 spawnYOffset += spawnYOffsetChange;
@@ -92,9 +108,22 @@ public class ShopManager : MonoBehaviour
             {
                 spawnXOffset *= -1;
             }
-            
-            int itemSpawnIndex = UnityEngine.Random.Range(0, spawnNormallyList.Count);
-            SpawnShopItem(spawnNormallyList[itemSpawnIndex], transform.position + new Vector3(spawnXOffset, spawnYOffset));
+
+            //Handles what to spawn
+            ShopItemInfo toSpawn;
+            int itemSpawnIndex;
+            if (i <= 2)
+            {
+                itemSpawnIndex = i;
+                toSpawn = possibleItems[itemSpawnIndex];
+            }
+            else
+            {
+                itemSpawnIndex = UnityEngine.Random.Range(0, spawnNormallyList.Count);
+                toSpawn = spawnNormallyList[itemSpawnIndex];
+            }
+
+            SpawnShopItem(toSpawn, transform.position + new Vector3(spawnXOffset, spawnYOffset));
             
 
         }
@@ -136,14 +165,39 @@ public class ShopManager : MonoBehaviour
         HelperFunctions.GainHealth();
     }
 
+    public void GainClear()
+    {
+        HelperFunctions.GainClear();
+    }
+
     public void GainPowerUp(PowerUpType pType)
     {
         HelperFunctions.GainPowerUp(pType);
     }
 
-    public void LosePowerUp(PowerUpType pType)
+    public bool LosePowerUp(PowerUpType pType)
     {
-        HelperFunctions.LosePowerUp(pType);
+        return HelperFunctions.LosePowerUp(pType);
+    }
+
+    public bool LoseRandomPowerUp(PowerUpType pType)
+    {
+        int basicPupCount = 4;
+        int maxIndex = (int)PowerUpType.shotPen;
+        int pIndex = (int)pType;
+        for (int i = pIndex; i < pIndex+basicPupCount; i++)
+        {
+            int modI = i;
+            if(i > maxIndex)
+            {
+                modI = i%basicPupCount;
+            }
+            if (LosePowerUp((PowerUpType)modI))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void MakeItemDesc(string desc)

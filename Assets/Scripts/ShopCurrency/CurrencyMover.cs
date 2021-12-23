@@ -25,6 +25,11 @@ public class CurrencyMover : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        if(player == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
         rotationRate += rotateAccel * Time.fixedDeltaTime;
         float currAngle = rb.rotation;
         rotationGoal = HelperFunctions.AngleBetween(player.transform.position, transform.position);
@@ -44,7 +49,7 @@ public class CurrencyMover : MonoBehaviour
         if(collision.gameObject.tag == "Player")
         {
             collision.gameObject.GetComponent<CurrencyManager>().currency += value;
-            collision.gameObject.GetComponent<SoundPlayer>().PlaySound(moneySound, 0.5f);
+            collision.gameObject.GetComponent<SoundPlayer>().PlaySound(moneySound, 0.40f);
             Destroy(gameObject);
         }
     }

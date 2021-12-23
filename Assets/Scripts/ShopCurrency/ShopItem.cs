@@ -14,7 +14,7 @@ public class ShopItem : MonoBehaviour
     public float textYGap = 5.2f;
     bool canBuy = true;
     public bool repeater = false;
-    public float repeatScaling = 1.5f;
+    public float repeatScaling = 2f;
     public bool canRepeatPurchase = true;
     GameObject priceVectorText;
     public ShopItemInfo sio;
@@ -44,7 +44,10 @@ public class ShopItem : MonoBehaviour
             return false;
         }
         
-        ShopEffect();
+        if(ShopEffect() == false)
+        {
+            return false;
+        }
         CurrencyManager.current.currency -= cost;
         float destroyTime = 2;
         for (int i = 0; i < gameObject.transform.childCount; i++)
@@ -74,12 +77,16 @@ public class ShopItem : MonoBehaviour
         canBuy = false;
         return true;
     }
-    public void ShopEffect()
+    public bool ShopEffect()
     {
+        bool effectSucceeded = true;
         switch (buyEffect)
         {
             case BuyEffects.gainHp:
                 ShopManager.current.GainHealth();
+                break;
+            case BuyEffects.gainClear:
+                ShopManager.current.GainClear();
                 break;
             case BuyEffects.gainPowerUp:
                 ShopManager.current.GainPowerUp(pType1);
@@ -92,9 +99,14 @@ public class ShopItem : MonoBehaviour
             case BuyEffects.losePowerUp:
                 ShopManager.current.LosePowerUp(pType1);
                 break;
+            case BuyEffects.loseRandomBasicPowerUp:
+                PowerUpType randomLossPType = (PowerUpType)UnityEngine.Random.Range(1, 5);
+                effectSucceeded = ShopManager.current.LoseRandomPowerUp(randomLossPType);
+                break;
             default:
                 Debug.LogError("No buy effect attached to touched shop item");
                 break;
         }
+        return effectSucceeded;
     }
 }

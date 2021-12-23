@@ -6,11 +6,11 @@ public class TitleMesser : MonoBehaviour
 {
     // Start is called before the first frame update
     bool titleExploded = false;
-    public Vector3 damageMove = new Vector3(0.5f,0.5f,0);
+    public Vector3 damageMove = new Vector3(1.5f,1.5f,0);
     public float damageRotate = 45;
-    public float damageTime = .2f;
-    public int damageVectors = 10;
-    public float titleCorrupt = 1 / 200f;
+    public float damageTime = 2f;
+    public int damageVectors = 16;
+    public float titleCorrupt = 1 / 25f;
     AllPointManager apm;
     public float deathVelocity = -3f;
     public float deathRotate = 45;
@@ -25,7 +25,7 @@ public class TitleMesser : MonoBehaviour
     {
         if(titleExploded == false)
         {
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButtonDown(0))
             {
                 apm.DamageAnimation(damageMove, damageRotate, damageTime, damageVectors, titleCorrupt);
             } 

@@ -46,8 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87db8e14450aea04c884832bb75a8f9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buyEffect: 2
-  pType1: 4
+  buyEffect: 3
+  pType1: 0
   pType2: 0
   cost: -15
   textYGap: 2.2

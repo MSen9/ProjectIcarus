@@ -7,13 +7,11 @@ public class MenuManager : MonoBehaviour
 {
     bool menuTransition = false;
     bool startNewGame = false;
-    bool settingsOpen = false;
-    bool creditsOpen = false;
     public static MenuManager current;
     public GameObject title;
     public GameObject subTitle;
     public GameObject[] menuButtons;
-    
+    public AudioClip songToPlay;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,6 +20,7 @@ public class MenuManager : MonoBehaviour
         {
             menuButtons[1].GetComponent<Button>().selectableButton = true;
         }
+        
     }
 
     // Update is called once per frame
@@ -29,8 +28,12 @@ public class MenuManager : MonoBehaviour
     {
         if (LightTransition.current.fadedOut)
         {
-            SceneManager.LoadScene("RunMap");
-            
+            SceneTransition.current.GoToScene("RunMap");
+
+        }
+        else if(MusicPlayer.current.playingSong == false)
+        {
+            MusicPlayer.current.PlaySong(songToPlay);
         }
     }
 

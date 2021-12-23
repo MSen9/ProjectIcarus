@@ -134,8 +134,12 @@ public class AllPointManager : MonoBehaviour
 
     public void DamageAnimation(Vector3 damageMove, float damageRotate, float damageTime, int damagePoints, float transformCorrupt = 1/20f)
     {
+        if (WithinPlayerView() == false)
+        {
+            return;
+        }
         //moves and rotates the points slightly to signal damage, can also change the tint of the sprite
-        if(damagePoints > points.Count)
+        if (damagePoints > points.Count)
         {
             //Debug.LogError("Error, too many damage points assign to: " + gameObject.name);
             damagePoints = points.Count;
@@ -205,8 +209,20 @@ public class AllPointManager : MonoBehaviour
         return rotationDirection;
     }
 
+    //optimization function, no need to do fancy animation is noone is around to see it
+    bool WithinPlayerView()
+    {
+        float maxCamDist = 35f;
+        return (Vector2.Distance(Camera.main.transform.position, transform.position) < maxCamDist);
+
+    }
     public void BreakBullet(float destroyVelocity = 0.5f, float rotationRate = 30f, float destroyTime = 2f)
     {
+        if(WithinPlayerView() == false)
+        {
+            Destroy(gameObject);
+            return;
+        }
         
         PolygonCollider2D[] pCols = gameObject.GetComponents<PolygonCollider2D>();
         for (int i = 0; i < pCols.Length; i++)
@@ -255,7 +271,8 @@ public class AllPointManager : MonoBehaviour
                 {
                     Debug.LogError("Error trying to do point death animations. deathMove: " + deathMove.ToString() +
                         " trueRotate: " + trueRotate.ToString() + 
-                        " destroyTime: " + destroyTime.ToString());
+                        " destroyTime: " + destroyTime.ToString() +
+                        " Point name: " + ph.gameObject.name);
                 }
                 
             } else

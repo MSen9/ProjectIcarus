@@ -404,7 +404,6 @@ GameObject:
   - component: {fileID: 4166391748717907314}
   - component: {fileID: 2305325234046715729}
   - component: {fileID: 2704220491741578090}
-  - component: {fileID: 5641563215039763723}
   m_Layer: 0
   m_Name: FireRatePowerUp
   m_TagString: Untagged
@@ -467,11 +466,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 118d66f8e320deb46929f2510b05b088, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeed: 4
   bulletType: 1
   powerType: 1
   shotSound: {fileID: 0}
   powerUpHit: {fileID: 8300000, guid: 6d169dd710472d342b69dd246dfb7467, type: 3}
   alreadyHit: []
+  shotPen: 2
+  baseShotPen: 0
+  shotSplits: 0
+  shotExplodes: 0
+  accelerationRate: 0
+  canBounce: 0
+  powerUpCount: 1
 --- !u!50 &4166391748717907314
 Rigidbody2D:
   serializedVersion: 4
@@ -532,7 +539,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.3453471}
+  m_Offset: {x: 0.002822876, y: 0.3669944}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -543,33 +550,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.12, y: 0.19354412}
-  m_EdgeRadius: 0
---- !u!61 &5641563215039763723
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8142265862236874421}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.20816894}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 0.20461762, y: 0.077812344}
+  m_Size: {x: 0.15200043, y: 0.23683876}
   m_EdgeRadius: 0
 --- !u!1 &8229838716482724677
 GameObject:

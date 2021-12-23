@@ -16,7 +16,9 @@ public enum ButtonFunctionality
     raiseSoundVolume,
     lowerSoundVolume,
     raiseMusicVolume,
-    lowerMusicVolume
+    lowerMusicVolume,
+    battleMapToMenu,
+    howToPlay,
 }
 public class Button : MonoBehaviour
 {
@@ -27,7 +29,7 @@ public class Button : MonoBehaviour
     bool isClicked = false;
     public bool selectableButton = true;
     public Vector3 buttonDimensions = new Vector3(5,1.5f, 0);
-    public Vector3 textOffset = new Vector3(0,-1f,0);
+    public Vector3 textOffset = new Vector3(0,-.5f,0);
     Dictionary<ButtonFunctionality, Action> buttonToAction;
     float clickedScale = 1.1f;
 
@@ -70,11 +72,15 @@ public class Button : MonoBehaviour
         buttonToAction.Add(ButtonFunctionality.newGame, StartNewGame);
         buttonToAction.Add(ButtonFunctionality.loadGame, LoadGame);
         buttonToAction.Add(ButtonFunctionality.settings, GoToSettings);
+        buttonToAction.Add(ButtonFunctionality.exitToDesktop,ExitToDesktop);
+        buttonToAction.Add(ButtonFunctionality.credits, GoToCredits);
         buttonToAction.Add(ButtonFunctionality.backToMenu, BackToMenu);
         buttonToAction.Add(ButtonFunctionality.raiseSoundVolume, RaiseSoundEffectVolume);
         buttonToAction.Add(ButtonFunctionality.lowerSoundVolume, LowerSoundEffectVolume);
         buttonToAction.Add(ButtonFunctionality.raiseMusicVolume, RaiseMusicVolume);
         buttonToAction.Add(ButtonFunctionality.lowerMusicVolume, LowerMusicVolume);
+        buttonToAction.Add(ButtonFunctionality.battleMapToMenu, BattleMapToMenu);
+        buttonToAction.Add(ButtonFunctionality.howToPlay, GoToHowToPlay);
     }
     // Update is called once per frame
     void Update()
@@ -133,6 +139,11 @@ public class Button : MonoBehaviour
         MenuManager.current.TransitionToNewGame();
     }
 
+    void BattleMapToMenu()
+    {
+        MapManager.current.BackToMenu();
+    }
+
     void LoadGame()
     {
 
@@ -144,6 +155,21 @@ public class Button : MonoBehaviour
         CamManager.current.SetPoint(new Vector3(0, -30, -10));
     }
 
+    void GoToHowToPlay()
+    {
+        CamManager.current.SetPoint(new Vector3(0, -90, -10));
+    }
+
+    void GoToCredits()
+    {
+        CamManager.current.SetPoint(new Vector3(0, -60, -10));
+    }
+
+    void ExitToDesktop()
+    {
+        Debug.Log("Quit the normal way.");
+        Application.Quit();
+    }
     void BackToMenu()
     {
         CamManager.current.SetPoint(new Vector3(0, 0, -10));

@@ -13,10 +13,11 @@ public struct PlayerSaveInfo
     public int shotExplodeBuffs;
     public int shotSplitBuffs;
     public int health;
+    public int clears;
     public int currency;
 
     public PlayerSaveInfo(int fireRatePowerUps, int manaGenPowerUps, int shotSizePowerUps,int shotPenBuffs, int shotSpreadBuffs,
-        int shotExplodeBuffs, int shotSplitBuffs, int health, int currency)
+        int shotExplodeBuffs, int shotSplitBuffs, int health, int clears, int currency)
     {
         this.fireRatePowerUps = fireRatePowerUps;
         this.manaGenPowerUps = manaGenPowerUps;
@@ -26,6 +27,7 @@ public struct PlayerSaveInfo
         this.shotExplodeBuffs = shotExplodeBuffs;
         this.shotSplitBuffs = shotSplitBuffs;
         this.health = health;
+        this.clears = clears;
         this.currency = currency;
         
     }
@@ -52,7 +54,8 @@ public class BetweenMapInfo : MonoBehaviour
         } else
         {
             //Set default values
-            savedInfo = new PlayerSaveInfo(0, 0, 0, 0, 0, 0, 0, 3, 0);
+            
+            savedInfo = new PlayerSaveInfo(0, 0, 0, 0, 0, 0, 0, 3,3, 0);
         }
             
         
@@ -79,6 +82,7 @@ public class BetweenMapInfo : MonoBehaviour
         HealthHandling hh = player.GetComponent<HealthHandling>();
         PlayerShooting ps = player.GetComponent<PlayerShooting>();
         CurrencyManager cm = player.GetComponent<CurrencyManager>();
-        savedInfo = new PlayerSaveInfo(ps.fireRateBuffs, ps.manaGenBuffs, ps.shotSizeBuffs, ps.shotPenBuffs, ps.shotSpreadBuffs,ps.shotExplodeBuffs,ps.shotSplitBuffs, hh.health, cm.currency);
+        BulletClears bc = player.GetComponent<BulletClears>();
+        savedInfo = new PlayerSaveInfo(ps.fireRateBuffs, ps.manaGenBuffs, ps.shotSizeBuffs, ps.shotPenBuffs, ps.shotSpreadBuffs,ps.shotExplodeBuffs,ps.shotSplitBuffs, hh.health, bc.clears, cm.currency);
     }
 }

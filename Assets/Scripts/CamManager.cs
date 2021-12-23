@@ -21,10 +21,15 @@ public class CamManager : MonoBehaviour
     bool mapOver = false;
     public Vector3 camFinalSpot = Vector3.zero;
     // Start is called before the first frame update
-    void Start()
+    public bool canScroll = false;
+    float scrollMin = -100;
+    float scrollMax = 0;
+    float MOVE_SCROLL_RATE = 10;
+    float WHEEL_SCROLL_RATE = 3;
+    void OnEnable()
     {
         current = this;
-        camPos = Camera.main.transform.position;
+        camPos = gameObject.transform.position;
     }
 
     // Update is called once per frame
@@ -32,6 +37,22 @@ public class CamManager : MonoBehaviour
     
     void LateUpdate()
     {
+        if (canScroll)
+        {
+            if (Input.GetKey(KeyCode.W))
+            {
+                camPos += new Vector3(0, MOVE_SCROLL_RATE * Time.deltaTime);
+
+            }
+            else if (Input.GetKey(KeyCode.S))
+            {
+                camPos -= new Vector3(0, MOVE_SCROLL_RATE * Time.deltaTime);
+
+            }
+            camPos += new Vector3(0, Input.mouseScrollDelta.y * WHEEL_SCROLL_RATE);
+            camPos = new Vector3(camPos.x, Mathf.Clamp(camPos.y, scrollMin, scrollMax), camPos.z);
+        }
+
         if (movingToDest)
         {
             currMoveTime += Time.deltaTime;
@@ -55,9 +76,15 @@ public class CamManager : MonoBehaviour
             currShake = Vector3.zero;
         }
         
+        
         Camera.main.transform.position = modCamPos;
     }
 
+    public void SetScrollBounds(float min, float max = 0)
+    {
+        scrollMin = min;
+        scrollMax = max;
+    }
     public void ShakeCamera(Vector3 moveAmount, float durration)
     {
         if (moveAmount.magnitude < shakeMovement.magnitude * Mathf.Clamp01(shakeTime * 2 / maxShakeTime))

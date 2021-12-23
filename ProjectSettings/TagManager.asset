@@ -20,6 +20,8 @@ TagManager:
   - WallContainer
   - MapTransition
   - SettingsMenu
+  - HealthTracker
+  - SpawnerList
   layers:
   - Default
   - TransparentFX

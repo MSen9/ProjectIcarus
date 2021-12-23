@@ -102,6 +102,7 @@ GameObject:
   - component: {fileID: 6504030424412930269}
   - component: {fileID: 4198843108661340819}
   - component: {fileID: 2133789264}
+  - component: {fileID: 6942337500204330504}
   m_Layer: 0
   m_Name: MainChara
   m_TagString: Player
@@ -164,6 +165,7 @@ MonoBehaviour:
   powerUpImmunityTime: 3
   currPowerUpImmunity: 0
   sliderObj: {fileID: 0}
+  manaBar: {fileID: 0}
   powerUpCol: {r: 0, g: 0, b: 0, a: 0}
   manaValue: 25
   manaGenRate: 5
@@ -405,6 +407,21 @@ MonoBehaviour:
   currency: 0
   currencyPos: {fileID: 0}
   currencySymbol: {fileID: 6683859300152242725, guid: 0811cf9219256cf41834917db2ebf373, type: 3}
+--- !u!114 &6942337500204330504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2911815808496680929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4fe3baaeccf8b643a2d6840758397e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clears: 3
+  dropper: {fileID: 1009997129938244750, guid: aa969ceaab604f0409ef5eb333529988, type: 3}
+  clearSound: {fileID: 8300000, guid: 6bde84395c2c072459da0e1e664f9717, type: 3}
 --- !u!1001 &394574461501411773
 PrefabInstance:
   m_ObjectHideFlags: 0

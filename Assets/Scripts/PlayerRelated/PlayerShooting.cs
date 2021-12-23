@@ -5,18 +5,22 @@ public class PlayerShooting : MonoBehaviour
     public float powerUpImmunityTime = 2f;
     public float currPowerUpImmunity = 0f;
 
-    float RELOAD_SPEED_SCALING = 0.85f;
+    float FIRE_RATE_RELOAD_SPEED_SCALING = 0.85f;
+    float FIRE_RATE_MANA_COST_SCALING = 0.85f;
+
     float SHOT_SIZE_SCALING = 1.1f;
-    float MANA_COST_SCALING = 0.9f;
-    float MANA_GEN_SCALING = 1.1f;
-    float defaultShotSize = 1.2f;
-    float SHOT_SPREAD_FIRERATE_NERF = 3 / 2f;
-    float SHOT_SPREAD_MANA_SPEND_NERF = 3 / 5f;
+    
+    float MANA_GEN_SCALING = 1.15f;
+    float defaultShotSize = 1.3f;
+    float SHOT_SPREAD_FIRERATE_NERF = 1f;
+    float SHOT_SPREAD_MANA_SPEND_NERF = 4 / 5f;
     //These two variables increase the angle at which the bullets come out
     float SHOT_SPREAD_ANGLE_BOOST = 30f;
     float SHOT_SPREAD_ANGLE_NERF = 4 / 5f;
-    float SHOT_SPLiT_FIRERATE_NERF = 3 / 2f;
+    float SHOT_SPLIT_FIRERATE_NERF = 1f;
     float SHOT_SPLIT_MANA_SPEND_BUFF = 3 / 2f;
+    float SHOT_EXPLODE_FIRERATE_NERF = 1f;
+    float SHOT_EXPLODE_MANA_SPEND_BUFF = 3 / 2f;
     float BASE_FIRERATE = 1;
 
     public GameObject sliderObj;
@@ -55,10 +59,12 @@ public class PlayerShooting : MonoBehaviour
     float nextShotTime = 0;
     public GameObject bullet;
     bool canShoot = true;
-
+    public bool dead = false;
 
     HealthHandling hh;
     SoundPlayer sPlayer;
+
+    bool playedShotSoundThisFrame = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -83,6 +89,7 @@ public class PlayerShooting : MonoBehaviour
         sShaker = Camera.main.GetComponent<CamManager>();
         hh = GetComponent<HealthHandling>();
         sPlayer = GetComponent<SoundPlayer>();
+        
     }
 
     void SetUpManaBar()
@@ -94,10 +101,16 @@ public class PlayerShooting : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
+        if (manaBar != null)
+        {
+            manaVertex.SetVertexLength(GetManaRatio() * 100);
+        }
         if (MapManager.current == null || MapManager.current.doneLoading == false || MapManager.current.mapOver)
         {
             return;
         }
+        playedShotSoundThisFrame = false;
         if (nextShotTime > 0)
         {
             nextShotTime -= Time.deltaTime;
@@ -149,10 +162,7 @@ public class PlayerShooting : MonoBehaviour
         //update the slider
         manaValue = Mathf.Clamp(manaValue,0,100);
         //float oldVal = slider.value;
-        if (manaBar != null)
-        {
-            manaVertex.SetVertexLength(GetManaRatio()*100);
-        }
+        
         
     }
 
@@ -195,7 +205,7 @@ public class PlayerShooting : MonoBehaviour
         
 
         //lower Mana
-        manaValue -= bulletManaCost;
+        manaValue -= bulletManaCost * shotsFired;
         //make bullet
         return bulletList;
     }
@@ -217,7 +227,12 @@ public class PlayerShooting : MonoBehaviour
         bm.baseShotPen = BASE_SHOT_PEN + shotPenBuffs;
         bm.shotSplits = shotSplitBuffs;
         bm.shotExplodes = shotExplodeBuffs;
-        bm.PlayShotSound();
+        if(playedShotSoundThisFrame == false)
+        {
+            bm.PlayShotSound();
+            playedShotSoundThisFrame = true;
+        }
+        
         //madeBullet.GetComponent<AllPointManager>().InstantGrowAllVertexes(); // corrects the size to fit the new scale
         return madeBullet;
     }
@@ -238,8 +253,10 @@ public class PlayerShooting : MonoBehaviour
     {
         //current balance idea: make it so that the power raises exponentially
         //more motivation to keep things "balanced" also helps accelerate the game
-        reloadSpeed = BASE_FIRERATE * Mathf.Pow(RELOAD_SPEED_SCALING, fireRateBuffs) * Mathf.Pow(SHOT_SPREAD_FIRERATE_NERF,shotSpreadBuffs) * Mathf.Pow(SHOT_SPLiT_FIRERATE_NERF,shotSplitBuffs);
-        bulletManaCost = baseBulletManaCost * Mathf.Pow(MANA_COST_SCALING, fireRateBuffs) * Mathf.Pow(SHOT_SPREAD_MANA_SPEND_NERF, shotSpreadBuffs) * Mathf.Pow(SHOT_SPLIT_MANA_SPEND_BUFF, shotSplitBuffs); 
+        reloadSpeed = BASE_FIRERATE * Mathf.Pow(FIRE_RATE_RELOAD_SPEED_SCALING, fireRateBuffs) * Mathf.Pow(SHOT_SPREAD_FIRERATE_NERF,shotSpreadBuffs)
+            * Mathf.Pow(SHOT_SPLIT_FIRERATE_NERF, shotSplitBuffs) * Mathf.Pow(SHOT_EXPLODE_FIRERATE_NERF, shotExplodeBuffs);
+        bulletManaCost = baseBulletManaCost * Mathf.Pow(FIRE_RATE_MANA_COST_SCALING, fireRateBuffs) * Mathf.Pow(SHOT_SPREAD_MANA_SPEND_NERF, shotSpreadBuffs)
+             * Mathf.Pow(SHOT_SPLIT_MANA_SPEND_BUFF, shotSplitBuffs) * Mathf.Pow(SHOT_EXPLODE_MANA_SPEND_BUFF, shotExplodeBuffs); 
         shotScale = defaultShotSize * Mathf.Pow(SHOT_SIZE_SCALING, shotSizeBuffs);
         manaGenRate = baseManaGenRate * Mathf.Pow(MANA_GEN_SCALING, manaGenBuffs);
         
