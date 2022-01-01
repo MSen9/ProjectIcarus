@@ -9,14 +9,15 @@ public class PlayerShooting : MonoBehaviour
     float FIRE_RATE_MANA_COST_SCALING = 0.85f;
 
     float SHOT_SIZE_SCALING = 1.1f;
+    public static float SPLIT_SHOT_MAIN_SCALING = 1.25f;
+    public static float EXPLODE_SHOT_MAIN_SCALING = 1.25f;
     
     float MANA_GEN_SCALING = 1.15f;
     float defaultShotSize = 1.3f;
     float SHOT_SPREAD_FIRERATE_NERF = 1f;
     float SHOT_SPREAD_MANA_SPEND_NERF = 4 / 5f;
     //These two variables increase the angle at which the bullets come out
-    float SHOT_SPREAD_ANGLE_BOOST = 30f;
-    float SHOT_SPREAD_ANGLE_NERF = 4 / 5f;
+    float SHOT_SPREAD_ANGLE_BOOST = 17f;
     float SHOT_SPLIT_FIRERATE_NERF = 1f;
     float SHOT_SPLIT_MANA_SPEND_BUFF = 3 / 2f;
     float SHOT_EXPLODE_FIRERATE_NERF = 1f;
@@ -55,6 +56,7 @@ public class PlayerShooting : MonoBehaviour
 
     int BASE_SHOT_PEN = 3;
     float shotScale = 1;
+    float mainShotScale = 1;
     float reloadSpeed = 1f;
     float nextShotTime = 0;
     public GameObject bullet;
@@ -106,7 +108,8 @@ public class PlayerShooting : MonoBehaviour
         {
             manaVertex.SetVertexLength(GetManaRatio() * 100);
         }
-        if (MapManager.current == null || MapManager.current.doneLoading == false || MapManager.current.mapOver)
+        if (MapManager.current == null || MapManager.current.doneLoading == false || MapManager.current.mapOver
+             || (Pauser.current != null && Pauser.current.isPaused))
         {
             return;
         }
@@ -192,14 +195,16 @@ public class PlayerShooting : MonoBehaviour
        
         if(shotsFired == 1)
         {
-            bulletList[0] = CreateBullet(aimOffset);
+            bulletList[0] = CreateBullet(aimOffset, true);
         } else
         {
-            float leftmostOffset = (SHOT_SPREAD_ANGLE_BOOST * shotSpreadBuffs) * (SHOT_SPREAD_ANGLE_NERF * shotSpreadBuffs);
+            float leftmostOffset = (SHOT_SPREAD_ANGLE_BOOST * shotSpreadBuffs);
             float offsetShift = leftmostOffset / (shotSpreadBuffs * 2);
+            
             for (int i = 0; i < shotsFired; i++)
             {
-                bulletList[i] = CreateBullet(aimOffset+(leftmostOffset/2) - offsetShift*i);
+                bool mainShot = i == shotSpreadBuffs;
+                bulletList[i] = CreateBullet(aimOffset+(leftmostOffset/2) - offsetShift*i,mainShot);
             }
         }
         
@@ -209,7 +214,7 @@ public class PlayerShooting : MonoBehaviour
         //make bullet
         return bulletList;
     }
-    GameObject CreateBullet(float aimOffset = 0)
+    GameObject CreateBullet(float aimOffset = 0, bool mainShot = false)
     {
         Quaternion trueRotation;
         if (aimOffset != 0)
@@ -219,14 +224,23 @@ public class PlayerShooting : MonoBehaviour
         {
             trueRotation = transform.rotation;
         }
-        GameObject madeBullet = Instantiate(bullet, transform.position + trueRotation * Vector2.up*shotScale*SHOOT_DIST_MOD, trueRotation);
+        float trueShotScale = mainShotScale;
+        if (mainShot == false)
+        {
+            trueShotScale = shotScale;
+        }
+        GameObject madeBullet = Instantiate(bullet, transform.position + trueRotation * Vector2.up* trueShotScale * SHOOT_DIST_MOD, trueRotation);
         madeBullet.transform.parent = GameObject.FindGameObjectWithTag("BulletList").transform;
-        madeBullet.transform.localScale = new Vector3(shotScale, shotScale, 1f);
+        madeBullet.transform.localScale = new Vector3(trueShotScale, trueShotScale, 1f);
         BulletMove bm = madeBullet.GetComponent<BulletMove>();
         bm.shotPen = BASE_SHOT_PEN + shotPenBuffs;
         bm.baseShotPen = BASE_SHOT_PEN + shotPenBuffs;
-        bm.shotSplits = shotSplitBuffs;
-        bm.shotExplodes = shotExplodeBuffs;
+        if (mainShot)
+        {
+            bm.shotSplits = shotSplitBuffs;
+            bm.shotExplodes = shotExplodeBuffs;
+        }
+        
         if(playedShotSoundThisFrame == false)
         {
             bm.PlayShotSound();
@@ -258,6 +272,7 @@ public class PlayerShooting : MonoBehaviour
         bulletManaCost = baseBulletManaCost * Mathf.Pow(FIRE_RATE_MANA_COST_SCALING, fireRateBuffs) * Mathf.Pow(SHOT_SPREAD_MANA_SPEND_NERF, shotSpreadBuffs)
              * Mathf.Pow(SHOT_SPLIT_MANA_SPEND_BUFF, shotSplitBuffs) * Mathf.Pow(SHOT_EXPLODE_MANA_SPEND_BUFF, shotExplodeBuffs); 
         shotScale = defaultShotSize * Mathf.Pow(SHOT_SIZE_SCALING, shotSizeBuffs);
+        mainShotScale = shotScale * Mathf.Pow(SPLIT_SHOT_MAIN_SCALING, shotSplitBuffs) * Mathf.Pow(EXPLODE_SHOT_MAIN_SCALING, shotExplodeBuffs);
         manaGenRate = baseManaGenRate * Mathf.Pow(MANA_GEN_SCALING, manaGenBuffs);
         
     }

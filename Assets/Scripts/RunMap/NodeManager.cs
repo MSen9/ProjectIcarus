@@ -20,6 +20,10 @@ public class NodeManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Pauser.current.isPaused)
+        {
+            return;
+        }
         if (selectableNode)
         {
             transform.localScale = Vector3.one * (1 + Mathf.PingPong(Time.time*ZOOM_CHANGE_RATE, scaleMaxBonus));
@@ -41,6 +45,10 @@ public class NodeManager : MonoBehaviour
 
     void OnMouseUp()
     {
+        if (Pauser.current.isPaused)
+        {
+            return;
+        }
         if (isClicked && RunRouteManager.current.movingPlayer == false)
         {
             //go to that level

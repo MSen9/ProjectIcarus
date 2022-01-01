@@ -44,6 +44,10 @@ public class MapTransition : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Pauser.current.isPaused)
+        {
+            return;
+        }
         float dist = Vector2.Distance(player.transform.position, transform.position);
         transform.rotation = Quaternion.Euler(0f, 0f, transform.rotation.eulerAngles.z - spinSpeed * Time.deltaTime);
         if (MapManager.current.goingToNextLevel)

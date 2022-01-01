@@ -32,18 +32,26 @@ public class MusicPlayer : MonoBehaviour
         currentSong = ac;
         currVolume = volume;
     }
-    public void PlaySong(AudioClip ac, float volume = -1)
+    public void PlaySong(AudioClip ac = null, float volume = -1)
     {
         if(volume < 0)
         {
             volume = currVolume;
         }
+        if(ac != null)
+        {
+            aSource.clip = ac;
+        }
         playingSong = true;
-        aSource.clip = ac;
+        
         aSource.volume = volume * Settings.current.musicVolume;
         aSource.Play();
     }
-
+    //used for the music manager button
+    public void UpdateVolume()
+    {
+        aSource.volume = currVolume * Settings.current.musicVolume;
+    }
     public void StopSong()
     {
         if(playingSong == false)

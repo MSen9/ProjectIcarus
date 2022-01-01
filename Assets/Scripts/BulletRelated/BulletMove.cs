@@ -59,10 +59,11 @@ public class BulletMove : MonoBehaviour
         if (bulletType != BulletType.powerUp || canBounce || bounceOnce)
         {
             nList = new List<Vector3>();
-            ignoreWalls = new List<Collider2D>();
+            
             if (explodedShot == false)
             {
                 alreadyHit = new List<GameObject>();
+                ignoreWalls = new List<Collider2D>();
             }
         }
         UpdateMovement();
@@ -105,6 +106,7 @@ public class BulletMove : MonoBehaviour
             moveSpeed += accelerationRate * Time.fixedDeltaTime;
             UpdateMovement();
         }
+        
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -133,29 +135,7 @@ public class BulletMove : MonoBehaviour
                 ignoreWalls.Clear();
                 hitWallFramePassed = false;
             }
-            if(shotSplits > 0)
-            {
-                if (bulletType == BulletType.powerUp)
-                {
-                    transform.localScale -= new Vector3(0.5f, 0.5f);
-                }
-                float leftmostOffset = (SHOT_SPLIT_ANGLE_BOOST * shotSplits) * (SHOT_SPLIT_ANGLE_NERF * shotSplits);
-                float offsetShift = leftmostOffset / ((shotSplits * 2) - 1);
-                Vector3 moveValsBack =  moveVals / (frameSpeed / SPLIT_SHOT_SECONDS_BACK);
-                for (int i = 0; i < shotSplits*2; i++)
-                {
-                    GameObject splitBullet = Instantiate(this.gameObject, transform.position - moveValsBack, 
-                        Quaternion.Euler(0,0,transform.rotation.eulerAngles.z + (leftmostOffset/2)-offsetShift*i));
-                    splitBullet.transform.parent = GameObject.FindGameObjectWithTag("BulletList").transform;
-                    BulletMove bm = splitBullet.GetComponent<BulletMove>();
-                    //splitBullet.transform.localScale = transform.localScale;
-                    bm.moveVals = (transform.rotation * Vector2.up) * frameSpeed * moveSpeed;
-                    bm.shotPen = shotPen;
-                    bm.shotSplits = 0;
-                    
-                }
-                shotSplits = 0;
-            } 
+            
            
             //rotate the bullet and move it based on excess movement and 
             ignoreWalls.Add(collision);
@@ -163,19 +143,63 @@ public class BulletMove : MonoBehaviour
 
             //works with any angle
             float wallAngle = collision.transform.rotation.eulerAngles.z * Mathf.Deg2Rad;
+            
             Vector3 n = new Vector3(Mathf.Sin(wallAngle),Mathf.Cos(wallAngle));
             //gets the center wall position by taking its starting positions (at the start point) and end point position then taking the average
             Vector3 wallCenter = (collision.transform.position + collision.gameObject.GetComponent<AllPointManager>().pointObjs[1].transform.position) / 2;
             n = CheckTowardsCenter(wallCenter, n);
+            
+           
+
+
             nList.Add(n);
             hitWall = true;
+
+
 
         }
     }
 
+    void SplitShot()
+    {
+        if (shotSplits > 0)
+        {
+            if (bulletType == BulletType.powerUp)
+            {
+                transform.localScale -= new Vector3(0.5f, 0.5f);
+            }
+            else
+            {
+                transform.localScale /= Mathf.Pow(PlayerShooting.SPLIT_SHOT_MAIN_SCALING, shotSplits);
+            }
+            float leftmostOffset = (SHOT_SPLIT_ANGLE_BOOST * shotSplits) * (SHOT_SPLIT_ANGLE_NERF * shotSplits);
+            float offsetShift = leftmostOffset / ((shotSplits * 2) - 1);
+            Vector3 moveValsBack = moveVals / (frameSpeed / SPLIT_SHOT_SECONDS_BACK);
+            for (int i = 0; i < shotSplits * 2; i++)
+            {
+                GameObject splitBullet = Instantiate(this.gameObject, transform.position - moveValsBack,
+                    Quaternion.Euler(0, 0, transform.rotation.eulerAngles.z + (leftmostOffset / 2) - offsetShift * i));
+                splitBullet.transform.parent = GameObject.FindGameObjectWithTag("BulletList").transform;
+                BulletMove bm = splitBullet.GetComponent<BulletMove>();
+                //splitBullet.transform.localScale = transform.localScale;
+                bm.moveVals = (transform.rotation * Vector2.up) * frameSpeed * moveSpeed;
+                bm.shotPen = shotPen;
+                splitBullet.transform.localScale /= Mathf.Pow(PlayerShooting.EXPLODE_SHOT_MAIN_SCALING, shotExplodes);
+                bm.shotExplodes = 0;
+                bm.shotSplits = 0;
+
+            }
+            shotSplits = 0;
+        }
+    }
     public void ExplodeShot(GameObject hitTarget)
     {
+        if(shotExplodes == 0)
+        {
+            return;
+        }
         float baseExplodeShots = 2;
+        transform.localScale /= Mathf.Pow(PlayerShooting.EXPLODE_SHOT_MAIN_SCALING, shotExplodes) ;
         for (int i = 0; i < shotExplodes; i++)
         {
             for (int j = 0; j < baseExplodeShots; j++)
@@ -183,16 +207,19 @@ public class BulletMove : MonoBehaviour
                 GameObject splitBullet = Instantiate(this.gameObject, transform.position,
                         Quaternion.Euler(0, 0, transform.rotation.eulerAngles.z - (0.5f+(i*shotExplodes)+j)/(float)(shotExplodes* baseExplodeShots) * 360f));
                 splitBullet.transform.parent = GameObject.FindGameObjectWithTag("BulletList").transform;
+                splitBullet.transform.localScale /= Mathf.Pow(PlayerShooting.SPLIT_SHOT_MAIN_SCALING, shotSplits);
                 BulletMove bm = splitBullet.GetComponent<BulletMove>();
                 //splitBullet.transform.localScale = transform.localScale;
                 bm.moveVals = (transform.rotation * Vector2.up) * frameSpeed * moveSpeed;
                 bm.shotPen = baseShotPen;
                 bm.baseShotPen = baseShotPen;
                 bm.shotExplodes = 0;
-                bm.shotSplits = shotSplits;
+                
+                bm.shotSplits = 0;
                 bm.explodedShot = true;
                 bm.alreadyHit = new List<GameObject>();
                 bm.alreadyHit.Add(hitTarget);
+                bm.ignoreWalls = new List<Collider2D>();
             }
         }
         shotExplodes = 0;
@@ -224,7 +251,15 @@ public class BulletMove : MonoBehaviour
         Vector3 v = moveVals;
         Vector3 u = (v.x * n.x + v.y * n.y) * n;
         Vector3 w = v - u;
-        moveVals = (w - u);
+        Vector3 potentialMoveVals = w - u;
+        
+        if (Vector3.Magnitude((transform.position + new Vector3(moveVals.x,moveVals.y))) < Vector3.Magnitude(transform.position + potentialMoveVals))
+        {
+            Debug.Log("Stopped bounce that would cause the bullet to move closer to being out of bounds");
+            return;
+        }
+        SplitShot();
+        moveVals = potentialMoveVals;
         rb.MoveRotation(Mathf.Atan2(moveVals.y, moveVals.x) * Mathf.Rad2Deg - 90f);
         alreadyHit.Clear();
     }

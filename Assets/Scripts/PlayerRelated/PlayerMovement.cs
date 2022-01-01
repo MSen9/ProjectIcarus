@@ -51,7 +51,7 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if(MapManager.current == null)
+        if(MapManager.current == null || (Pauser.current != null && Pauser.current.isPaused))
         {
             return;
         }
@@ -145,32 +145,7 @@ public class PlayerMovement : MonoBehaviour
         }
         currSpeed.x = Mathf.Clamp(currSpeed.x, maxSpeed * -1, maxSpeed);
         currSpeed.y = Mathf.Clamp(currSpeed.y, maxSpeed * -1, maxSpeed);
-        /*
-        //move using X then Y, check for blockage
-        if(restrictedMovement.Count > 0)
-        {
-            //if movement is blocked by one touching wall then stop all movement
-            int[] blockedCount = { 0, 0, 0, 0 };
-            foreach(bool[] blocks in restrictedMovement.Values)
-            {
-                for (int i = 0; i < blocks.Length; i++)
-                {
-                    if(blocks[i] == true)
-                    {
-                        blockedCount[i]++;
-                    }
-                }
-            }
-            if(blockedCount[(int)DirTypes.Up] > 0)
-            {
-                if (Input.GetKey(upKey))
-                {
-                    RemoveWallRestrictions(DirTypes.Up);
-                }
-            }
-
-        } 
-        */
+        
         rb.MovePosition(new Vector2(transform.position.x + currSpeed.x * Time.fixedDeltaTime,
                 transform.position.y + currSpeed.y * Time.fixedDeltaTime));
 

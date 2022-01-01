@@ -25,7 +25,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3782997677294738991}
-  m_LocalRotation: {x: -0, y: -0, z: -0.000000031023493, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: 0.7071068, w: 0.7071068}
   m_LocalPosition: {x: -0.3, y: 0.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -96,6 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0fa5262751d4ac49a1e45725306b535, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vertex: {fileID: 0}
 --- !u!1 &4470251632723808617
 GameObject:
   m_ObjectHideFlags: 0
@@ -123,7 +124,7 @@ Transform:
   m_GameObject: {fileID: 4470251632723808617}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 2.5000007, z: 1}
+  m_LocalScale: {x: 1, y: 0, z: 1}
   m_Children: []
   m_Father: {fileID: 3569364748929891155}
   m_RootOrder: 0
@@ -191,10 +192,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3ddbfb97ec1a624b84970abef27ef96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  endPoint: {fileID: 0}
+  endPoint: {fileID: 3782997677294738991}
   autoGetEndPoint: 1
   extendTime: 1
-  fixVertexPositions: 1
+  totalPointDist: 0
+  setUpComplete: 1
 --- !u!1 &6041107060496253453
 GameObject:
   m_ObjectHideFlags: 0
@@ -241,11 +243,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pointObjs:
-  - {fileID: 0}
   - {fileID: 3782997677294738991}
-  vertexObjs: []
+  vertexObjs:
+  - {fileID: 4470251632723808617}
   vHandlers:
-  - {fileID: 0}
   - {fileID: 3716100759917874296}
   startFullyGrown: 1
   pointScale: 1
@@ -254,7 +255,7 @@ MonoBehaviour:
   firstWaveLoad: 0
   extendTime: 1
   doneExtending: 1
-  unitsPerScale: 0
+  unitsPerScale: 0.32
 --- !u!114 &893219670042975404
 MonoBehaviour:
   m_ObjectHideFlags: 0

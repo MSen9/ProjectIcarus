@@ -71,6 +71,9 @@ TagManager:
   - name: DangerBullet
     uniqueID: 2525572675
     locked: 0
+  - name: UI-BG
+    uniqueID: 2152936161
+    locked: 0
   - name: UI-Vertex
     uniqueID: 566785111
     locked: 0

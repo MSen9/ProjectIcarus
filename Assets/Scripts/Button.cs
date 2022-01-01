@@ -19,6 +19,8 @@ public enum ButtonFunctionality
     lowerMusicVolume,
     battleMapToMenu,
     howToPlay,
+    unPause,
+    
 }
 public class Button : MonoBehaviour
 {
@@ -38,7 +40,11 @@ public class Button : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        MakeTextObj();
+        if(buttonTextObj == null)
+        {
+            MakeTextObj();
+        }
+        
 
 
         ResizeButton();
@@ -66,6 +72,18 @@ public class Button : MonoBehaviour
         buttonTextObj.transform.position = this.transform.position + textOffset;
     }
 
+    public void EditorMakeTextObj()
+    {
+        if(buttonTextObj != null)
+        {
+            DestroyImmediate(buttonTextObj);
+        }
+        StringToVectorManager sToV = GameObject.FindGameObjectWithTag("StoVManager").GetComponent<StringToVectorManager>();
+        buttonTextObj = sToV.MakeEditorString(buttonText,textScale, StringAlignment.center);
+        buttonTextObj.transform.parent = this.transform;
+        buttonTextObj.transform.position = this.transform.position + textOffset;
+    }
+
     void DefineButtonDefinitions()
     {
         buttonToAction = new Dictionary<ButtonFunctionality, Action>();
@@ -79,8 +97,9 @@ public class Button : MonoBehaviour
         buttonToAction.Add(ButtonFunctionality.lowerSoundVolume, LowerSoundEffectVolume);
         buttonToAction.Add(ButtonFunctionality.raiseMusicVolume, RaiseMusicVolume);
         buttonToAction.Add(ButtonFunctionality.lowerMusicVolume, LowerMusicVolume);
-        buttonToAction.Add(ButtonFunctionality.battleMapToMenu, BattleMapToMenu);
+        buttonToAction.Add(ButtonFunctionality.battleMapToMenu, OtherSceneToMenu);
         buttonToAction.Add(ButtonFunctionality.howToPlay, GoToHowToPlay);
+        buttonToAction.Add(ButtonFunctionality.unPause, UnPauseGame);
     }
     // Update is called once per frame
     void Update()
@@ -139,9 +158,10 @@ public class Button : MonoBehaviour
         MenuManager.current.TransitionToNewGame();
     }
 
-    void BattleMapToMenu()
+    void OtherSceneToMenu()
     {
-        MapManager.current.BackToMenu();
+        RunManager.current.BackToMenu();
+        LightTransition.current.ignorePause = true;
     }
 
     void LoadGame()
@@ -200,6 +220,7 @@ public class Button : MonoBehaviour
         Settings.current.musicVolume += soundIncrement;
         Settings.current.musicVolume = Mathf.Clamp(Settings.current.musicVolume, 0, 2);
         transform.parent.GetComponent<SettingsMenu>().UpdateMusicText();
+        MusicPlayer.current.UpdateVolume();
     }
     void LowerMusicVolume()
     {
@@ -207,5 +228,11 @@ public class Button : MonoBehaviour
         Settings.current.musicVolume -= soundIncrement;
         Settings.current.musicVolume =  Mathf.Clamp(Settings.current.musicVolume, 0, 2);
         transform.parent.GetComponent<SettingsMenu>().UpdateMusicText();
+        MusicPlayer.current.UpdateVolume();
+    }
+
+    void UnPauseGame()
+    {
+        Pauser.current.UnPauseGame();
     }
 }

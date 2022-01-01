@@ -179,12 +179,13 @@ public class MapManager : MonoBehaviour
         }
     }
 
+    /*
     public void BackToMenu()
     {
         LightTransition.current.StartFadeOut(1);
         backToMenu = true;
     }
-
+    */
     void DestroyAllEnemies()
     {
         for (int i = 0; i < eList.transform.childCount; i++)
@@ -202,26 +203,29 @@ public class MapManager : MonoBehaviour
         spawnsAllowed = false;
         mapOver = true;
         deathPause = true;
-        PauseAll();
+        MapSetPause(true);
         HealthPowerUpTracker.current.gameOverInfo.SetActive(true);
         MusicPlayer.current.PlaySong(gameOverMusic);
     }
 
-    void PauseAll()
+   
+
+    public void MapSetPause(bool doPause)
     {
-        isPaused = true;
+        isPaused = doPause;
+       
         for (int i = 0; i < bulletList.transform.childCount; i++)
         {
             GameObject currBullet = bulletList.transform.GetChild(i).gameObject;
-            currBullet.GetComponent<BulletMove>().enabled = false;
-            if(currBullet.GetComponent<AutoScaling>() != false)
+            currBullet.GetComponent<BulletMove>().enabled = !doPause;
+            if (currBullet.GetComponent<AutoScaling>() != null)
             {
-                currBullet.GetComponent<AutoScaling>().enabled = false;
+                currBullet.GetComponent<AutoScaling>().enabled = !doPause;
             }
 
-            if (currBullet.GetComponent<FollowPlayer>() != false)
+            if (currBullet.GetComponent<FollowPlayer>() != null)
             {
-                currBullet.GetComponent<FollowPlayer>().enabled = false;
+                currBullet.GetComponent<FollowPlayer>().enabled = !doPause;
             }
 
         }
@@ -229,21 +233,24 @@ public class MapManager : MonoBehaviour
         for (int i = 0; i < eList.transform.childCount; i++)
         {
             GameObject currChild = eList.transform.GetChild(i).gameObject;
-            currChild.GetComponent<HealthHandling>().enabled = false;
+            currChild.GetComponent<HealthHandling>().enabled = !doPause;
             EnemyShooting[] eShootings = currChild.GetComponents<EnemyShooting>();
             for (int j = 0; j < eShootings.Length; j++)
             {
-                eShootings[j].enabled = false;
+                eShootings[j].enabled = !doPause;
             }
-            currChild.GetComponent<EnemyMovement>().enabled = false;
+            currChild.GetComponent<EnemyMovement>().enabled = !doPause;
         }
 
         for (int i = 0; i < spawnerList.transform.childCount; i++)
         {
             GameObject currChild = spawnerList.transform.GetChild(i).gameObject;
-            currChild.GetComponent<SpawnManager>().enabled = false;
+            currChild.GetComponent<SpawnManager>().enabled = !doPause;
         }
+        
     }
+    
+    
     void ClearBullets(bool spawnMoney = true)
     {
         
@@ -252,7 +259,8 @@ public class MapManager : MonoBehaviour
             GameObject currBullet = bulletList.transform.GetChild(i).gameObject;
             if (currBullet.GetComponent<BulletMove>().bulletType == BulletType.damage)
             {
-                if (spawnMoney)
+                //Checks if money can spawn and bullet is still within the map bounds
+                if (spawnMoney && currBullet.transform.position.magnitude < currMapInfo.mapSize*2f)
                 {
                     Instantiate(currencyThing, currBullet.transform.position, currBullet.transform.rotation);
                 }

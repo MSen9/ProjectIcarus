@@ -95,19 +95,18 @@ public class RunManager : MonoBehaviour
         return finalEnemy;
     }
 
+    public void BackToMenu()
+    {
+        if (LightTransition.current != null && LightTransition.current.fadingOut == false)
+        {
+            backToMenu = true;
+            LightTransition.current.StartFadeOut(1);
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if(LightTransition.current != null && LightTransition.current.fadingOut == false)
-            {
-                backToMenu = true;
-                LightTransition.current.StartFadeOut(1);
-            }
-            
-           
-        }
         if (backToMenu && LightTransition.current != null && LightTransition.current.fadedOut)
         {
             SceneTransition.current.GoToScene("Menu");

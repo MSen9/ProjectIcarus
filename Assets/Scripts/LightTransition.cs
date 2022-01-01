@@ -14,6 +14,8 @@ public class LightTransition : MonoBehaviour
     public static LightTransition current;
     public bool fadingOut = false;
     public bool fadedOut = false;
+    public bool ignorePause = false;
+    public bool fadingIn = true;
     void Start()
     {
         current = this;
@@ -24,6 +26,10 @@ public class LightTransition : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Pauser.current != null && Pauser.current.isPaused && ignorePause == false)
+        {
+            return;
+        }
         if (fullBright == false)
         {
             globalLight.intensity += Time.deltaTime*maxLight/fadeInTime;
@@ -31,6 +37,7 @@ public class LightTransition : MonoBehaviour
             {
                 globalLight.intensity = maxLight;
                 fullBright = true;
+                fadingIn = false;
             }
         }
         if (fadingOut)

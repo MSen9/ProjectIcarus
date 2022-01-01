@@ -25,6 +25,10 @@ public class CurrencyMover : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (Pauser.current.isPaused)
+        {
+            return;
+        }
         if(player == null)
         {
             Destroy(gameObject);

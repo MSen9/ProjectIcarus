@@ -97,6 +97,10 @@ public class RunRouteManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Pauser.current.isPaused)
+        {
+            return;
+        }
         if (movingPlayer)
         {
             travelTime += Time.deltaTime;

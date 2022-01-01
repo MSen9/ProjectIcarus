@@ -25,7 +25,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 226394316136690597}
-  m_LocalRotation: {x: -0, y: -0, z: 0.8112421, w: -0.5847105}
+  m_LocalRotation: {x: -0, y: -0, z: 0.81124246, w: -0.5847099}
   m_LocalPosition: {x: 0, y: 1.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -96,6 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0fa5262751d4ac49a1e45725306b535, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vertex: {fileID: 0}
 --- !u!1 &263247543252119022
 GameObject:
   m_ObjectHideFlags: 0
@@ -123,7 +124,7 @@ Transform:
   m_GameObject: {fileID: 263247543252119022}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1.593444, z: 1}
+  m_LocalScale: {x: 1, y: 1.5934436, z: 1}
   m_Children: []
   m_Father: {fileID: 7200244658030537460}
   m_RootOrder: 0
@@ -194,7 +195,8 @@ MonoBehaviour:
   endPoint: {fileID: 3599032009320963312}
   autoGetEndPoint: 1
   extendTime: 1
-  fixVertexPositions: 1
+  totalPointDist: 0.50990194
+  setUpComplete: 1
 --- !u!1 &980479643088616394
 GameObject:
   m_ObjectHideFlags: 0
@@ -256,6 +258,15 @@ MonoBehaviour:
   - {fileID: 3599032009320963312}
   - {fileID: 7652433318229600232}
   - {fileID: 4480701300841872208}
+  vertexObjs:
+  - {fileID: 3012057969489290401}
+  - {fileID: 5128545389197546802}
+  - {fileID: 2083261514913474168}
+  - {fileID: 2962562298060058273}
+  - {fileID: 263247543252119022}
+  - {fileID: 2035883994117752426}
+  - {fileID: 6936821040746817710}
+  - {fileID: 8864529462516743015}
   vHandlers:
   - {fileID: 4911169504158527140}
   - {fileID: 3919841094822272540}
@@ -272,6 +283,7 @@ MonoBehaviour:
   firstWaveLoad: 0
   extendTime: 1
   doneExtending: 1
+  unitsPerScale: 0.32
 --- !u!114 &5920075553443554667
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -311,7 +323,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1541760373447658636}
-  m_LocalRotation: {x: -0, y: -0, z: 0.9951334, w: -0.09853707}
+  m_LocalRotation: {x: -0, y: -0, z: 0.99513334, w: -0.09853766}
   m_LocalPosition: {x: 0.3, y: 1.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -382,6 +394,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0fa5262751d4ac49a1e45725306b535, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vertex: {fileID: 0}
 --- !u!1 &1567050740755132155
 GameObject:
   m_ObjectHideFlags: 0
@@ -407,7 +420,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1567050740755132155}
-  m_LocalRotation: {x: -0, y: -0, z: -0.5847105, w: 0.81124204}
+  m_LocalRotation: {x: -0, y: -0, z: -0.5847098, w: 0.8112425}
   m_LocalPosition: {x: -0.3, y: 1.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -478,6 +491,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0fa5262751d4ac49a1e45725306b535, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vertex: {fileID: 0}
 --- !u!1 &2035883994117752426
 GameObject:
   m_ObjectHideFlags: 0
@@ -505,7 +519,7 @@ Transform:
   m_GameObject: {fileID: 2035883994117752426}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 0.9882122, z: 1}
+  m_LocalScale: {x: 1, y: 0.9882116, z: 1}
   m_Children: []
   m_Father: {fileID: 7572916884683111078}
   m_RootOrder: 0
@@ -576,7 +590,8 @@ MonoBehaviour:
   endPoint: {fileID: 7652433318229600232}
   autoGetEndPoint: 1
   extendTime: 1
-  fixVertexPositions: 1
+  totalPointDist: 0.3162277
+  setUpComplete: 1
 --- !u!1 &2083261514913474168
 GameObject:
   m_ObjectHideFlags: 0
@@ -604,7 +619,7 @@ Transform:
   m_GameObject: {fileID: 2083261514913474168}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 0.9882122, z: 1}
+  m_LocalScale: {x: 1, y: 0.98821205, z: 1}
   m_Children: []
   m_Father: {fileID: 3379119383112929293}
   m_RootOrder: 0
@@ -675,7 +690,8 @@ MonoBehaviour:
   endPoint: {fileID: 1541760373447658636}
   autoGetEndPoint: 1
   extendTime: 1
-  fixVertexPositions: 1
+  totalPointDist: 0.31622785
+  setUpComplete: 1
 --- !u!1 &2463910300013604790
 GameObject:
   m_ObjectHideFlags: 0
@@ -701,7 +717,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2463910300013604790}
-  m_LocalRotation: {x: -0, y: -0, z: 0.9951334, w: 0.09853698}
+  m_LocalRotation: {x: -0, y: -0, z: 0.99513334, w: 0.0985377}
   m_LocalPosition: {x: 0.4, y: 0.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -772,6 +788,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0fa5262751d4ac49a1e45725306b535, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vertex: {fileID: 0}
 --- !u!1 &2729675086128169139
 GameObject:
   m_ObjectHideFlags: 0
@@ -797,7 +814,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2729675086128169139}
-  m_LocalRotation: {x: -0, y: -0, z: -0.09853706, w: 0.9951334}
+  m_LocalRotation: {x: -0, y: -0, z: -0.098537646, w: 0.99513334}
   m_LocalPosition: {x: -0.4, y: 0.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -868,6 +885,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0fa5262751d4ac49a1e45725306b535, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vertex: {fileID: 0}
 --- !u!1 &2962562298060058273
 GameObject:
   m_ObjectHideFlags: 0
@@ -895,7 +913,7 @@ Transform:
   m_GameObject: {fileID: 2962562298060058273}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1.5934433, z: 1}
+  m_LocalScale: {x: 1, y: 1.5934436, z: 1}
   m_Children: []
   m_Father: {fileID: 5686210790756836965}
   m_RootOrder: 0
@@ -966,7 +984,8 @@ MonoBehaviour:
   endPoint: {fileID: 2463910300013604790}
   autoGetEndPoint: 1
   extendTime: 1
-  fixVertexPositions: 1
+  totalPointDist: 0.50990194
+  setUpComplete: 1
 --- !u!1 &3012057969489290401
 GameObject:
   m_ObjectHideFlags: 0
@@ -994,7 +1013,7 @@ Transform:
   m_GameObject: {fileID: 3012057969489290401}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1.5934433, z: 1}
+  m_LocalScale: {x: 1, y: 1.5934436, z: 1}
   m_Children: []
   m_Father: {fileID: 4916617231129707992}
   m_RootOrder: 0
@@ -1065,7 +1084,8 @@ MonoBehaviour:
   endPoint: {fileID: 1567050740755132155}
   autoGetEndPoint: 1
   extendTime: 1
-  fixVertexPositions: 1
+  totalPointDist: 0.50990194
+  setUpComplete: 1
 --- !u!1 &3599032009320963312
 GameObject:
   m_ObjectHideFlags: 0
@@ -1091,7 +1111,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3599032009320963312}
-  m_LocalRotation: {x: -0, y: -0, z: 0.81124204, w: 0.5847105}
+  m_LocalRotation: {x: -0, y: -0, z: 0.8112421, w: 0.58471036}
   m_LocalPosition: {x: 0.3, y: 0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1162,6 +1182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0fa5262751d4ac49a1e45725306b535, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vertex: {fileID: 0}
 --- !u!1 &4480701300841872208
 GameObject:
   m_ObjectHideFlags: 0
@@ -1187,7 +1208,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4480701300841872208}
-  m_LocalRotation: {x: -0, y: -0, z: 0.098537, w: 0.9951334}
+  m_LocalRotation: {x: -0, y: -0, z: 0.098537646, w: 0.99513334}
   m_LocalPosition: {x: -0.3, y: 0.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1258,6 +1279,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0fa5262751d4ac49a1e45725306b535, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vertex: {fileID: 0}
 --- !u!1 &5128545389197546802
 GameObject:
   m_ObjectHideFlags: 0
@@ -1285,7 +1307,7 @@ Transform:
   m_GameObject: {fileID: 5128545389197546802}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 0.9882122, z: 1}
+  m_LocalScale: {x: 1, y: 0.98821205, z: 1}
   m_Children: []
   m_Father: {fileID: 6922815215565109988}
   m_RootOrder: 0
@@ -1356,7 +1378,8 @@ MonoBehaviour:
   endPoint: {fileID: 226394316136690597}
   autoGetEndPoint: 1
   extendTime: 1
-  fixVertexPositions: 1
+  totalPointDist: 0.31622785
+  setUpComplete: 1
 --- !u!1 &6936821040746817710
 GameObject:
   m_ObjectHideFlags: 0
@@ -1384,7 +1407,7 @@ Transform:
   m_GameObject: {fileID: 6936821040746817710}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 0.9882122, z: 1}
+  m_LocalScale: {x: 1, y: 0.9882116, z: 1}
   m_Children: []
   m_Father: {fileID: 8054091469045351060}
   m_RootOrder: 0
@@ -1455,7 +1478,8 @@ MonoBehaviour:
   endPoint: {fileID: 4480701300841872208}
   autoGetEndPoint: 1
   extendTime: 1
-  fixVertexPositions: 1
+  totalPointDist: 0.3162277
+  setUpComplete: 1
 --- !u!1 &7652433318229600232
 GameObject:
   m_ObjectHideFlags: 0
@@ -1481,7 +1505,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7652433318229600232}
-  m_LocalRotation: {x: -0, y: -0, z: 0.5847105, w: 0.81124204}
+  m_LocalRotation: {x: -0, y: -0, z: 0.58471036, w: 0.8112421}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1552,6 +1576,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0fa5262751d4ac49a1e45725306b535, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vertex: {fileID: 0}
 --- !u!1 &8864529462516743015
 GameObject:
   m_ObjectHideFlags: 0
@@ -1579,7 +1604,7 @@ Transform:
   m_GameObject: {fileID: 8864529462516743015}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1.593444, z: 1}
+  m_LocalScale: {x: 1, y: 1.5934436, z: 1}
   m_Children: []
   m_Father: {fileID: 106891524267392068}
   m_RootOrder: 0
@@ -1650,4 +1675,5 @@ MonoBehaviour:
   endPoint: {fileID: 2729675086128169139}
   autoGetEndPoint: 1
   extendTime: 1
-  fixVertexPositions: 1
+  totalPointDist: 0.50990194
+  setUpComplete: 1

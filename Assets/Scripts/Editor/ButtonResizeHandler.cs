@@ -9,10 +9,11 @@ public class ButtonResizeHandler : Editor
     {
         base.OnInspectorGUI();
         //DrawDefaultInspector();
-        if (GUILayout.Button("Set Button Size"))
+        if (GUILayout.Button("Set Button"))
         {
             Button myScript = ((Button)target);
             myScript.ResizeButton();
+            myScript.EditorMakeTextObj();
         }
     }
 }

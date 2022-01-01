@@ -31,6 +31,12 @@ public class StringToVectorManager : MonoBehaviour
         }
         current = this;
         DontDestroyOnLoad(this.gameObject);
+        SetupChars();
+
+    }
+    
+    void SetupChars()
+    {
         vectorChars = new Dictionary<char, GameObject>();
         vectorStrings = new List<GameObject>();
         for (int i = 0; i < CHAR_LIST.Length; i++)
@@ -41,20 +47,18 @@ public class StringToVectorManager : MonoBehaviour
             {
                 GameObject currChar = Resources.Load(path) as GameObject;
                 vectorChars.Add(CHAR_LIST[i], currChar);
-            
-            } catch
+
+            }
+            catch
             {
                 Debug.LogError("No valid prefab for: " + CHAR_LIST[i].ToString());
             }
-                
-            
-            
         }
 
         for (int i = 0; i < SPEC_CHARS.Length; i++)
         {
             string path = Path.Combine(VECTOR_PREFAB_DIRECTORY, SPEC_CHARS[i].Substring(1, SPEC_CHARS[i].Length - 1));
-            
+
             try
             {
                 GameObject currChar = Resources.Load(path) as GameObject;
@@ -66,7 +70,6 @@ public class StringToVectorManager : MonoBehaviour
                 Debug.LogError("No valid prefab for: " + SPEC_CHARS[i][0].ToString());
             }
         }
-
     }
 
     public GameObject StringToVectors(string inputString, float stringScale = 1f, 
@@ -162,6 +165,13 @@ public class StringToVectorManager : MonoBehaviour
         }
         vectorStrings.Add(vectorHolder);
         return vectorHolder;
+    }
+
+    public GameObject MakeEditorString(string inputString, float stringScale = 1f,
+        StringAlignment align = StringAlignment.left, float[] textCols = null)
+    {
+        SetupChars();
+        return StringToVectors(inputString, stringScale, align, textCols);
     }
     public void StringExplode(GameObject vectorHolder, float destroyTime, float baseDestroyMove = 0.5f, float destroyRotate = 30f)
     {

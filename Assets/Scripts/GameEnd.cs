@@ -11,7 +11,7 @@ public class GameEnd : MonoBehaviour
     float currMoveTime = 0;
     string endString = "Wow, Your Winner!\nYou've reached the test ending\nI wonder What's the most\n";
     string[] bonusStrings = { "Fire rate Power-Ups", "Shot Size Power-Ups","Power gen power-ups","Power-ups","Health","Clears","Currency"};
-    string endEndString  = "\nYou can with with.";
+    string endEndString  = "\nYou can win with.";
     GameObject endText;
     void Start()
     {
