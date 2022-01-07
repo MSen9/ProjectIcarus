@@ -9,7 +9,7 @@ public class GameEnd : MonoBehaviour
     public Vector3 posStart;
     float yMoveTime = 3f;
     float currMoveTime = 0;
-    string endString = "Wow, Your Winner!\nYou've reached the test ending\nI wonder What's the most\n";
+    string endString = "You Are the Victor!\nYou've reached the current ending\nI wonder What's the most\n";
     string[] bonusStrings = { "Fire rate Power-Ups", "Shot Size Power-Ups","Power gen power-ups","Power-ups","Health","Clears","Currency"};
     string endEndString  = "\nYou can win with.";
     GameObject endText;

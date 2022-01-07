@@ -31,6 +31,7 @@ public class SaveAndLoad : MonoBehaviour
         sInfo.tutorialCompleted = gp.tutorialCompleted;
         sInfo.soundEffectVolume = s.soundEffectVolume;
         sInfo.musicVolume = s.musicVolume;
+        sInfo.fullScreen = s.fullScreen;
         string saveText = JsonUtility.ToJson(sInfo);
         File.WriteAllText(Application.persistentDataPath + "/OverallSave.json", saveText);
     }
@@ -80,6 +81,7 @@ public class OverallSaveInfo
     public bool tutorialCompleted;
     public float soundEffectVolume;
     public float musicVolume;
+    public bool fullScreen;
 }
 
 [System.Serializable]

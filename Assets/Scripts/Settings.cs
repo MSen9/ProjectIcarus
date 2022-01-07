@@ -9,6 +9,7 @@ public class Settings : MonoBehaviour
     public static Settings current;
     public float soundEffectVolume = 1f;
     public float musicVolume = 1f;
+    public bool fullScreen = false;
     void Start()
     {
         if(current != null)
@@ -20,14 +21,35 @@ public class Settings : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
         if (SaveAndLoad.current.hasOverallSaveInfo)
         {
-            soundEffectVolume = SaveAndLoad.current.sInfo.soundEffectVolume;
-            musicVolume = SaveAndLoad.current.sInfo.musicVolume;
+            OverallSaveInfo sInfo = SaveAndLoad.current.sInfo;
+            soundEffectVolume = sInfo.soundEffectVolume;
+            musicVolume = sInfo.musicVolume;
+            fullScreen = sInfo.fullScreen;
+            
         }
+        ToggleFullscreen(false);
+
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void ToggleFullscreen(bool switchMode = true)
+    {
+        if (switchMode)
+        {
+            fullScreen = !fullScreen;
+        }
+       
+        if (fullScreen)
+        {
+            Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+        } else
+        {
+            Screen.fullScreenMode = FullScreenMode.Windowed;
+        }
     }
 }

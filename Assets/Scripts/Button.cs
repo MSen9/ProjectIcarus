@@ -20,6 +20,7 @@ public enum ButtonFunctionality
     battleMapToMenu,
     howToPlay,
     unPause,
+    fullScreen
     
 }
 public class Button : MonoBehaviour
@@ -33,9 +34,11 @@ public class Button : MonoBehaviour
     public Vector3 buttonDimensions = new Vector3(5,1.5f, 0);
     public Vector3 textOffset = new Vector3(0,-.5f,0);
     Dictionary<ButtonFunctionality, Action> buttonToAction;
+    Dictionary<ButtonFunctionality, Action> buttonToOpenCheck;
     float clickedScale = 1.1f;
 
     public GameObject[] buttonCorners;
+    public GameObject checkMark;
     BoxCollider2D bCol;
     // Start is called before the first frame update
     void Start()
@@ -49,7 +52,10 @@ public class Button : MonoBehaviour
 
         ResizeButton();
         DefineButtonDefinitions();
-
+        if (buttonToOpenCheck.ContainsKey(buttonMode))
+        {
+            buttonToOpenCheck[buttonMode]();
+        }
         
     }
 
@@ -86,6 +92,8 @@ public class Button : MonoBehaviour
 
     void DefineButtonDefinitions()
     {
+        buttonToOpenCheck = new Dictionary<ButtonFunctionality, Action>();
+
         buttonToAction = new Dictionary<ButtonFunctionality, Action>();
         buttonToAction.Add(ButtonFunctionality.newGame, StartNewGame);
         buttonToAction.Add(ButtonFunctionality.loadGame, LoadGame);
@@ -100,6 +108,7 @@ public class Button : MonoBehaviour
         buttonToAction.Add(ButtonFunctionality.battleMapToMenu, OtherSceneToMenu);
         buttonToAction.Add(ButtonFunctionality.howToPlay, GoToHowToPlay);
         buttonToAction.Add(ButtonFunctionality.unPause, UnPauseGame);
+        buttonToAction.Add(ButtonFunctionality.fullScreen, ToggleFullscreen);
     }
     // Update is called once per frame
     void Update()
@@ -152,6 +161,10 @@ public class Button : MonoBehaviour
         StringToVectorManager.current.StringExplode(buttonTextObj, 1.5f, 4f);
     }
 
+    void ToggleCheckMark()
+    {
+        checkMark.SetActive(!checkMark.activeSelf);
+    }
     //Button effect list
     void StartNewGame()
     {
@@ -231,6 +244,11 @@ public class Button : MonoBehaviour
         MusicPlayer.current.UpdateVolume();
     }
 
+    void ToggleFullscreen()
+    {
+        ToggleCheckMark();
+        Settings.current.ToggleFullscreen();
+    }
     void UnPauseGame()
     {
         Pauser.current.UnPauseGame();

@@ -7,12 +7,14 @@ public class SettingsMenu : MonoBehaviour
     // Start is called before the first frame update
     public GameObject soundVolTextSpot;
     public GameObject musicVolTextSpot;
+    public GameObject fullScreenCheckMark;
     GameObject soundVolText;
     GameObject musicVolText;
     void Start()
     {
         UpdateSoundText();
         UpdateMusicText();
+        fullScreenCheckMark.SetActive(Settings.current.fullScreen);
     }
 
     // Update is called once per frame
